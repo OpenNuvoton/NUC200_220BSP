@@ -97,7 +97,7 @@ void SYS_Init(void)
     SYS->GPB_MFP |= SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD;
 
     /* Disable the GPA0 - GPA3 digital input path to avoid the leakage current. */
-    PA->OFFD = 0xF << GPIO_OFFD_OFFD_Pos;
+    PA->OFFD |= 0xF << GPIO_OFFD_OFFD_Pos;
 
     /* Configure the GPA0 - GPA3 ADC analog input pins */
     SYS->GPA_MFP &= ~(SYS_GPA_MFP_PA0_Msk | SYS_GPA_MFP_PA1_Msk | SYS_GPA_MFP_PA2_Msk | SYS_GPA_MFP_PA3_Msk) ;
