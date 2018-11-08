@@ -23,7 +23,6 @@
 /*---------------------------------------------------------------------------------------------------------*/
 void SYS_Init(void);
 void UART0_Init(void);
-void AdcMeasureAVDD(void);
 uint32_t GetAVDDCodeByADC(void);
 uint32_t GetAVDDVoltage(void);
 
@@ -231,7 +230,7 @@ uint32_t GetAVDDCodeByADC(void)
 /*---------------------------------------------------------------------------------------------------------*/
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
-main(void)
+int32_t main(void)
 {
     uint32_t u32AVDDVoltage;
 

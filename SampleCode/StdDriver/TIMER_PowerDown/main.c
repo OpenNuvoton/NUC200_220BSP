@@ -102,7 +102,7 @@ void SYS_Init(void)
     CLK_EnableModuleClock(TMR0_MODULE);    
     
     /* Select Timer0 module clock source */
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0_S_LIRC, NULL);
+    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0_S_LIRC, (uint32_t)NULL);
 
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */

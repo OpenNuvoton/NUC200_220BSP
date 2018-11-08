@@ -28,7 +28,7 @@ uint8_t DestArray[64];
 volatile int32_t IntCnt;
 volatile int32_t IsTestOver;
 volatile uint32_t g_u32TwoChannelPdmaTest=0;
-extern char GetChar(void);
+
 
 
 /*---------------------------------------------------------------------------------------------------------*/
@@ -38,7 +38,7 @@ int32_t main(void);
 
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* Clear buffer funcion                                                                              	   */
+/* Clear buffer function                                                                              	   */
 /*---------------------------------------------------------------------------------------------------------*/
 void ClearBuf(uint32_t u32Addr, uint32_t u32Length, uint8_t u8Pattern)
 {
@@ -357,7 +357,7 @@ void UART1_Init()
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
 
-int main(void)
+int32_t main(void)
 {
    	uint8_t unItem;       
     

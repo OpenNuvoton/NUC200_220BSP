@@ -16,6 +16,13 @@
 #define PLLCON_SETTING      CLK_PLLCON_50MHz_HXT
 #define PLL_CLOCK           50000000
 
+#if defined ( __GNUC__ )
+#define printf PutString
+#else
+char GetChar(void);
+#endif
+
+
 void SYS_Init(void)
 {
     /*---------------------------------------------------------------------------------------------------------*/
@@ -52,7 +59,8 @@ void SYS_Init(void)
     /*---------------------------------------------------------------------------------------------------------*/
 
     /* Set GPB multi-function pins for UART0 RXD and TXD */
-    SYS->GPB_MFP = SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD;
+    SYS->GPB_MFP &= ~(SYS_GPB_MFP_PB0_Msk | SYS_GPB_MFP_PB1_Msk);
+    SYS->GPB_MFP |= SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD;
 
 }
 
@@ -65,6 +73,50 @@ void UART_Init()
 }
 
 
+#if defined ( __GNUC__ )
+
+
+/**
+ * @brief    Routine to get a char
+ * @param    None
+ * @returns  Get value from UART debug port or semihost
+ * @details  Wait UART debug port or semihost to input a char.
+ */
+static char GetChar(void)
+{
+    while(1)
+    {
+        if ((UART0->FSR & UART_FSR_RX_EMPTY_Msk) == 0)
+        {
+            return (UART0->DATA);
+        }
+    }
+}
+
+/*
+ * @returns     Send value from UART debug port
+ * @details     Send a target char to UART debug port .
+ */
+static void SendChar_ToUART(int ch)
+{
+    while (UART0->FSR & UART_FSR_TX_FULL_Msk);
+
+    UART0->DATA = ch;
+    if(ch == '\n')
+    {
+        while (UART0->FSR & UART_FSR_TX_FULL_Msk);
+        UART0->DATA = '\r';
+    }
+}
+
+static void PutString(char *str)
+{
+    while (*str != '\0')
+    {
+        SendChar_ToUART(*str++);
+    }
+}
+#endif
 
 
 int main()
@@ -84,7 +136,7 @@ int main()
     FMC_Open();
 
     printf("\n\nPress any key to branch to APROM...\n");
-    getchar();
+    GetChar();
 
     printf("\n\nChange VECMAP and branch to LDROM...\n");
     UART_WAIT_TX_EMPTY(UART0);

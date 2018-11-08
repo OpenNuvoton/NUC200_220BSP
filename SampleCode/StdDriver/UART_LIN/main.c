@@ -30,7 +30,6 @@ uint8_t g_u8SendData[12] ;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define functions prototype                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
-extern char GetChar(void);
 void LIN_FunctionTest(void);
 void LIN_FunctionTestUsingLinCtlReg(void);
 void LIN_MasterTest(uint32_t u32id, uint32_t u32ModeSel);
@@ -464,7 +463,7 @@ void UART1_Init()
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
 
-int main(void)
+int32_t main(void)
 {
     uint32_t u32Item;
 
