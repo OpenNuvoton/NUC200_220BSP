@@ -37,7 +37,7 @@ extern "C"
 */
 
 /* Global variables for Control Pipe */
-uint8_t g_usbd_SetupPacket[8] = {0};
+uint8_t g_usbd_SetupPacket[8] = {0};        /*!< Setup packet buffer */
 volatile uint8_t g_usbd_RemoteWakeupEn = 0; /*!< Remote wake up function enable flag */
 
 static volatile uint8_t *g_usbd_CtrlInPointer = 0;
@@ -55,8 +55,8 @@ static volatile uint8_t  g_usbd_CtrlInZeroFlag = 0;
 const S_USBD_INFO_T *g_usbd_sInfo;                  /*!< A pointer for USB information structure */
 
 VENDOR_REQ g_usbd_pfnVendorRequest = NULL;          /*!< USB Vendor Request Functional Pointer */
-CLASS_REQ g_usbd_pfnClassRequest = NULL;
-SET_INTERFACE_REQ g_usbd_pfnSetInterface = NULL;
+CLASS_REQ g_usbd_pfnClassRequest = NULL;            /*!< USB Class Request Functional Pointer */
+SET_INTERFACE_REQ g_usbd_pfnSetInterface = NULL;    /*!< USB Set Interface Functional Pointer */
 SET_CONFIG_CB g_usbd_pfnSetConfigCallback = NULL;   /*!< USB Set configuration callback function pointer */
 uint32_t g_u32EpStallLock                = 0;       /*!< Bit map flag to lock specified EP when SET_FEATURE */
 
@@ -111,7 +111,7 @@ void USBD_Start(void)
 /**
   * @brief      Get the received SETUP packet
   *
-  * @param[in]  buf A buffer used to store 8-byte SETUP packet.
+  * @param[in]  buf A buffer pointer used to store 8-byte SETUP packet.
   *
   * @return     None
   *
@@ -136,9 +136,9 @@ void USBD_GetSetupPacket(uint8_t *buf)
 void USBD_ProcessSetupPacket(void)
 {
     g_usbd_CtrlOutToggle = 0;
-
     /* Get SETUP packet from USB buffer */
     USBD_MemCopy(g_usbd_SetupPacket, (uint8_t *)USBD_BUF_BASE, 8);
+
     /* Check the request type */
     switch(g_usbd_SetupPacket[0] & 0x60)
     {
@@ -333,6 +333,9 @@ void USBD_StandardRequest(void)
             case GET_DESCRIPTOR:
             {
                 USBD_GetDescriptor();
+                /* Status stage */
+                USBD_PrepareCtrlOut(0, 0);
+                DBG_PRINTF("Get descriptor\n");
                 break;
             }
             case GET_INTERFACE:
@@ -569,7 +572,6 @@ void USBD_CtrlIn(void)
             USBD_SET_PAYLOAD_LEN(EP0, 0);
             g_usbd_CtrlInZeroFlag = 0;
         }
-
         DBG_PRINTF("Ctrl In done.\n");
     }
 }
@@ -608,7 +610,6 @@ void USBD_CtrlOut(void)
     uint32_t u32Size;
 
     DBG_PRINTF("Ctrl Out Ack %d\n", g_usbd_CtrlOutSize);
-
     if(g_usbd_CtrlOutToggle != (USBD->EPSTS & USBD_EPSTS_EPSTS1_Msk))
     {
         g_usbd_CtrlOutToggle = USBD->EPSTS & USBD_EPSTS_EPSTS1_Msk;
@@ -641,6 +642,8 @@ void USBD_CtrlOut(void)
   */
 void USBD_SwReset(void)
 {
+    int i;
+
     // Reset all variables for protocol
     g_usbd_CtrlInPointer = 0;
     g_usbd_CtrlInSize = 0;
@@ -649,6 +652,10 @@ void USBD_SwReset(void)
     g_usbd_CtrlOutSizeLimit = 0;
     g_u32EpStallLock = 0;
     memset(g_usbd_SetupPacket, 0, 8);
+
+    /* Reset PID DATA0 */
+    for(i=0; i<USBD_MAX_EP; i++)
+        USBD->EP[i].CFG &= ~USBD_CFG_DSQ_SYNC_Msk;
 
     // Reset USB device address
     USBD_SET_ADDR(0);
@@ -680,8 +687,3 @@ void USBD_LockEpStall(uint32_t u32EpBitmap)
 #endif
 
 /*** (C) COPYRIGHT 2014 Nuvoton Technology Corp. ***/
-
-
-
-
-
