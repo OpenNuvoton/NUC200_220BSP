@@ -229,7 +229,6 @@ int main()
                 func();
 
                 while(1);
-                break;
 
             default :
                 break;
