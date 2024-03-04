@@ -3,104 +3,102 @@
  * @version  V1.00
  * @brief    CMSIS Device Startup File
  *
- * SPDX-License-Identifier: Apache-2.0
- * @copyright (C) 2018 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
 
 
-	.syntax	unified
-	.arch	armv6-m
-
-	.section .stack
-	.align	3
-#ifdef __STACK_SIZE
-	.equ	Stack_Size, __STACK_SIZE
-#else
-	.equ	Stack_Size, 0x00000400
+    .syntax unified
+    .arch   armv8 - m.base
+    
+    .section .stack
+    .align  3
+#ifndef Stack_Size
+    .equ    Stack_Size, 0x00000400
 #endif
-	.global	__StackTop
-	.global	__StackLimit
+    .global __StackTop
+    .global __StackLimit
 __StackLimit:
-	.space	Stack_Size
-	.size	__StackLimit, . - __StackLimit
+    .space  Stack_Size
+    .size   __StackLimit, . - __StackLimit
 __StackTop:
-	.size	__StackTop, . - __StackTop
-
-	.section .heap
-	.align	3
-#ifdef __HEAP_SIZE
-	.equ	Heap_Size, __HEAP_SIZE
-#else
-	.equ	Heap_Size, 0x00000100
+    .size   __StackTop, . - __StackTop
+    
+    .section .heap
+    .align  3
+#ifndef Heap_Size
+    .equ    Heap_Size, 0x00000100
 #endif
-	.globl	__HeapBase
-	.globl	__HeapLimit
+    
+    .global __HeapBase
+    .global __HeapLimit
 __HeapBase:
-	.if	Heap_Size
-	.space	Heap_Size
-	.endif
-	.size	__HeapBase, . - __HeapBase
+    .if Heap_Size
+    .space  Heap_Size
+    .endif
+    .size   __HeapBase, . - __HeapBase
 __HeapLimit:
-	.size	__HeapLimit, . - __HeapLimit
-
-	.section .vectors
-	.align	2
-	.globl	__Vectors
+    .size   __HeapLimit, . - __HeapLimit
+    
+    .section .vectors
+    .align  2
+    .global __Vectors
 __Vectors:
-	.long	__StackTop            /* Top of Stack */
-	.long	Reset_Handler         /* Reset Handler */
-	.long	NMI_Handler           /* NMI Handler */
-	.long	HardFault_Handler     /* Hard Fault Handler */
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved*/
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved */
-	.long	SVC_Handler           /* SVCall Handler */
-	.long	0                     /* Reserved */
-	.long	0                     /* Reserved */
-	.long	PendSV_Handler        /* PendSV Handler */
-	.long	SysTick_Handler       /* SysTick Handler */
-
-	/* External interrupts */
+    .long   __StackTop            /* Top of Stack */
+    .long   Reset_Handler         /* Reset Handler */
+    .long   NMI_Handler           /* NMI Handler */
+    .long   HardFault_Handler     /* Hard Fault Handler */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   SVC_Handler           /* SVCall Handler */
+    .long   0                     /* Reserved */
+    .long   0                     /* Reserved */
+    .long   PendSV_Handler        /* PendSV Handler */
+    .long   SysTick_Handler       /* SysTick Handler */
+    
+    /* External interrupts */
+    
     .long   BOD_IRQHandler  
     .long   WDT_IRQHandler  
     .long   EINT0_IRQHandler
     .long   EINT1_IRQHandler
     .long   GPAB_IRQHandler 
     .long   GPCDEF_IRQHandler
-    .long   PWMA_IRQHandler 
-    .long   PWMB_IRQHandler
+    .long   PWMA_IRQHandler  
+    .long   PWMB_IRQHandler  
     .long   TMR0_IRQHandler 
     .long   TMR1_IRQHandler 
     .long   TMR2_IRQHandler 
     .long   TMR3_IRQHandler 
     .long   UART02_IRQHandler
     .long   UART1_IRQHandler
-    .long   SPI0_IRQHandler 
-    .long   SPI1_IRQHandler 
-    .long   SPI2_IRQHandler
-    .long   SPI3_IRQHandler
-    .long   I2C0_IRQHandler
+    .long   SPI0_IRQHandler  
+    .long   SPI1_IRQHandler  
+    .long   SPI2_IRQHandler  
+    .long   SPI3_IRQHandler  
+    .long   I2C0_IRQHandler 
     .long   I2C1_IRQHandler 
-    .long   CAN0_IRQHandler
-    .long   CAN1_IRQHandler
-    .long   SC012_IRQHandler
+    .long   CAN0_IRQHandler  
+    .long   CAN1_IRQHandler 
+    .long   SC012_IRQHandler 
     .long   USBD_IRQHandler  
     .long   PS2_IRQHandler  
-    .long   ACMP_IRQHandler
+    .long   ACMP_IRQHandler 
     .long   PDMA_IRQHandler
-    .long   I2S_IRQHandler
+    .long   I2S_IRQHandler 
     .long   PWRWU_IRQHandler
     .long   ADC_IRQHandler
-    .long   Default_Handler
-    .long   RTC_IRQHandler  
-	
+    .long   Default_Handler    
+    .long   RTC_IRQHandler    
     
-    .size   __Vectors, . - __Vectors  
+    .size   __Vectors, . - __Vectors
+    
     
     
     .text
@@ -257,6 +255,33 @@ Reset_Handler:
     
     .align  1
     .thumb_func
+    .weak   HardFault_Handler
+    .type   HardFault_Handler, % function
+
+ HardFault_Handler:
+
+    MOV     R0, LR
+    MRS     R1, MSP
+    MRS     R2, PSP
+    LDR     R3, =ProcessHardFault
+    BLX     R3
+    BX      R0
+
+    .size   HardFault_Handler, . - HardFault_Handler
+
+    .align  1
+    .thumb_func
+    .weak   ProcessHardFaultx
+    .type   ProcessHardFaultx, % function
+
+ ProcessHardFaultx:
+    B       .
+
+    .size   ProcessHardFaultx, . - ProcessHardFaultx
+
+
+    .align  1
+    .thumb_func
     .weak   Default_Handler
     .type   Default_Handler, % function
     
@@ -274,7 +299,7 @@ Default_Handler:
     .endm
     
     def_irq_handler NMI_Handler
-    def_irq_handler HardFault_Handler
+    //def_irq_handler HardFault_Handler
     def_irq_handler SVC_Handler
     def_irq_handler PendSV_Handler
     def_irq_handler SysTick_Handler
@@ -312,5 +337,24 @@ Default_Handler:
     def_irq_handler ADC_IRQHandler
     def_irq_handler RTC_IRQHandler
     
+    
+    /* ;int32_t SH_DoCommand(int32_t n32In_R0, int32_t n32In_R1, int32_t *pn32Out_R0) */
+    .align 2
+    .thumb_func
+    .type SH_DoCommand, % function
+    
+SH_DoCommand:
+    
+    BKPT   0xAB                /* ; Wait ICE or HardFault */
+    //LDR    R3, = SH_Return
+    MOV    R4, lr
+    BLX    R3                  /* ; Call SH_Return. The return value is in R0 */
+    BX     R4                  /* ; Return value = R0 */
+    .size  SH_DoCommand, . - SH_DoCommand
+    
+    .align  2
+    .thumb_func
+    .global __PC
+    .type   __PC, % function
     
     .end

@@ -86,7 +86,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="ilg.gnuarmeclipse.managedbuild.cross.config.elf.release.2125185501.1352370777" name="FMC_Base.ld" rcbsApplicability="disable" resourcePath="User/FMC_Base.ld" toolsToInvoke=""/>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

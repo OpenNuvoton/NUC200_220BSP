@@ -6,7 +6,8 @@
  * @brief    FMC LDROM IAP sample program for NUC200 series MCU
  *
  * @note
- * Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
 *****************************************************************************/
 #include <stdio.h>
 #include "NUC200Series.h"
@@ -22,6 +23,8 @@
 char GetChar(void);
 #endif
 
+
+void ProcessHardFault(void){}
 
 void SYS_Init(void)
 {

@@ -1,11 +1,9 @@
-;/*---------------------------------------------------------------------------------------------------------*/
-;/*                                                                                                         */
-;/* Copyright(c) 2017 Nuvoton Technology Corp. All rights reserved.                                         */
-;/*                                                                                                         */
-;/*---------------------------------------------------------------------------------------------------------*/
-
+;/******************************************************************************
+; * @copyright SPDX-License-Identifier: Apache-2.0
+; * @copyright Copyright (C) 2018 Nuvoton Technology Corp. All rights reserved.
+;*****************************************************************************/
 	.syntax	unified
-	.arch	armv6-m
+	.arch	armv8-m.base
 
 	.globl	loaderImageBase
 	.globl	loaderImageLimit

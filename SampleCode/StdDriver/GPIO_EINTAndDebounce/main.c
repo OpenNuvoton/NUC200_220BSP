@@ -5,7 +5,8 @@
  * $Date: 15/04/10 5:08p $
  * @brief    Show the usage of GPIO external interrupt function and de-bounce function.
  * @note
- * Copyright (C) 2013 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "NUC200Series.h"
