@@ -37,7 +37,7 @@
 		<link>
 			<name>CMSIS/CMSIS</name>
 			<type>2</type>
-			<locationURI>PARENT-5-PROJECT_LOC/Library/Device/Nuvoton/NUC230_240/Source</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/Library/Device/Nuvoton/NUC200Series/Source</locationURI>
 		</link>
 		<link>
 			<name>Library/Library</name>
