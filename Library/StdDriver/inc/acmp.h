@@ -31,7 +31,7 @@ extern "C"
 */
 
 /*---------------------------------------------------------------------------------------------------------*/
-/* CMPCR constant definitions                                                                            */
+/* CMPCR constant definitions                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
 #define ACMP_CR_VNEG_BANDGAP         (1UL << ACMP_CMPCR_CMPCN_Pos)      /*!< CMPCR setting for selecting band-gap voltage as the source of ACMP V-. */
 #define ACMP_CR_VNEG_PIN             (0UL << ACMP_CMPCR_CMPCN_Pos)      /*!< CMPCR setting for selecting the voltage of ACMP negative input pin as the source of ACMP V-. */

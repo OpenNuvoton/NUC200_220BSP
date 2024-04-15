@@ -55,7 +55,7 @@ void SYS_Init(void)
 
 }
 
-void UART0_Init()
+void UART0_Init(void)
 {
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init UART                                                                                               */
@@ -70,7 +70,7 @@ void UART0_Init()
 /*---------------------------------------------------------------------------------------------------------*/
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
-int main(void)
+int32_t main(void)
 {
     int32_t i32Err;
 
@@ -93,7 +93,7 @@ int main(void)
     printf("  >> Please connect PB.2 and PE.1 first << \n");
     printf("     Press any key to start test by using [Pin Data Input/Output Control] \n\n");
     getchar();
-    
+
     /* Configure PB.2 as Output mode and PE.1 as Input mode */
     GPIO_SetMode(PB, BIT2, GPIO_PMD_OUTPUT);
     GPIO_SetMode(PE, BIT1, GPIO_PMD_INPUT);

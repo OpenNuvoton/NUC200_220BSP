@@ -33,7 +33,7 @@ uint32_t g_au32RxBuffer[TEST_COUNT];
 int32_t main(void)
 {
     PDMA_T *pdma;
-    uint32_t u32DataCount;
+    uint32_t u32DataCount, u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -62,14 +62,14 @@ int32_t main(void)
     printf("      I2S_DI (PC.2)\n      I2S_DO (PC.3)\n\n");
     printf("      This sample code will transmit and receive %d data with PDMA transfer.\n", TEST_COUNT);
     printf("      After PDMA transfer is finished, the received value will be printed.\n");
-    
+
     /* Select I2S clock source from HXT (12 MHz) */
     CLK_SetModuleClock(I2S_MODULE, CLK_CLKSEL2_I2S_S_HXT, 0);
 
     /* Enable I2S TX and RX functions */
     /* Master mode, 16-bit word width, stereo mode, I2S format. */
     I2S_Open(I2S, I2S_MODE_MASTER, 16000, I2S_DATABIT_16, I2S_STEREO, I2S_FORMAT_I2S);
-    
+
     /* Data initiation */
     g_au32TxBuffer[0] = 0x55005501;
     g_au32RxBuffer[0] = 0;
@@ -92,7 +92,7 @@ int32_t main(void)
     /* Set Memory-to-Peripheral mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * I2S_TX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x2<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* I2S PDMA RX channel configuration */
     /* Set transfer width (32 bits) and transfer count */
     PDMA_SetTransferCnt(I2S_RX_DMA_CH, PDMA_WIDTH_32, TEST_COUNT);
@@ -103,7 +103,7 @@ int32_t main(void)
     /* Set Peripheral-to-Memory mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * I2S_RX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x1<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* Clear RX FIFO */
     I2S_CLR_RX_FIFO(I2S);
     /* Trigger PDMA */
@@ -112,33 +112,50 @@ int32_t main(void)
     /* Enable RX DMA and TX DMA function */
     I2S_ENABLE_TXDMA(I2S);
     I2S_ENABLE_RXDMA(I2S);
-    
+
     /* Check I2S RX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(I2S_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(I2S_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for I2S RX DMA transfer done interrupt flag time-out!");
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(I2S_RX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
     /* Check I2S TX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(I2S_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(I2S_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for I2S TX DMA transfer done interrupt flag time-out!");
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(I2S_TX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
-    
+
     /* Disable RX function and TX function */
     I2S_DISABLE_RX(I2S);
     I2S_DISABLE_TX(I2S);
-    
+
     /* Print the received data */
     for(u32DataCount = 0; u32DataCount < TEST_COUNT; u32DataCount++)
     {
         printf("%d:\t0x%X\n", u32DataCount, g_au32RxBuffer[u32DataCount]);
     }
-    
+
+lexit:
     printf("\n\nExit I2S sample code.\n");
-    
+
     /* Disable PDMA peripheral clock */
     CLK->AHBCLK &= ~CLK_AHBCLK_PDMA_EN_Msk;
     /* Close I2S */
     I2S_Close(I2S);
-    
+
     while(1);
 }
 

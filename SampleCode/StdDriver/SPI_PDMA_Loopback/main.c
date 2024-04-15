@@ -88,7 +88,7 @@ void SYS_Init(void)
 
     /* Waiting for Internal RC clock ready */
     CLK_WaitClockReady(CLK_CLKSTATUS_OSC22M_STB_Msk);
-    
+
     /* Enable external 12 MHz XTAL */
     CLK_EnableXtalRC(CLK_PWRCON_XTL12M_EN_Msk);
 
@@ -148,7 +148,7 @@ void SPI_Init(void)
     SPI_Open(SPI0, SPI_MASTER, SPI_MODE_0, 32, 1000000);
     /* Enable the automatic hardware slave select function. Select the SPI0_SS0 pin and configure as low-active. */
     SPI_EnableAutoSS(SPI0, SPI_SS0, SPI_SS_ACTIVE_LOW);
-    
+
     /* Configure SPI1 */
     /* Configure SPI1 as a slave, clock idle low, 32-bit transaction, drive output on falling clock edge and latch input on rising edge. */
     /* Configure SPI1 as a low level active device. */
@@ -160,7 +160,7 @@ void SPI_Init(void)
 void SpiLoopTest_WithPDMA(void)
 {
     PDMA_T *pdma;
-    uint32_t u32DataCount;
+    uint32_t u32DataCount, u32TimeOutCnt;
     int32_t i32Err;
 
 
@@ -186,7 +186,7 @@ void SpiLoopTest_WithPDMA(void)
     /* Set Memory-to-Peripheral mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * SPI_MASTER_TX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x2<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* SPI master PDMA RX channel configuration */
     /* Set transfer width (32 bits) and transfer count */
     PDMA_SetTransferCnt(SPI_MASTER_RX_DMA_CH, PDMA_WIDTH_32, TEST_COUNT);
@@ -197,7 +197,7 @@ void SpiLoopTest_WithPDMA(void)
     /* Set Peripheral-to-Memory mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * SPI_MASTER_RX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x1<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* SPI slave PDMA RX channel configuration */
     /* Set transfer width (32 bits) and transfer count */
     PDMA_SetTransferCnt(SPI_SLAVE_RX_DMA_CH, PDMA_WIDTH_32, TEST_COUNT);
@@ -208,7 +208,7 @@ void SpiLoopTest_WithPDMA(void)
     /* Set Peripheral-to-Memory mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * SPI_SLAVE_RX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x1<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* SPI slave PDMA TX channel configuration */
     /* Set transfer width (32 bits) and transfer count */
     PDMA_SetTransferCnt(SPI_SLAVE_TX_DMA_CH, PDMA_WIDTH_32, TEST_COUNT);
@@ -219,38 +219,74 @@ void SpiLoopTest_WithPDMA(void)
     /* Set Memory-to-Peripheral mode */
     pdma = (PDMA_T *)((uint32_t) PDMA0_BASE + (0x100 * SPI_SLAVE_TX_DMA_CH));
     pdma->CSR = (pdma->CSR & (~PDMA_CSR_MODE_SEL_Msk)) | (0x2<<PDMA_CSR_MODE_SEL_Pos);
-    
+
     /* Trigger PDMA */
     PDMA_Trigger(SPI_SLAVE_RX_DMA_CH);
     PDMA_Trigger(SPI_SLAVE_TX_DMA_CH);
     PDMA_Trigger(SPI_MASTER_TX_DMA_CH);
     PDMA_Trigger(SPI_MASTER_RX_DMA_CH);
-    
+
     /* Enable SPI slave DMA function */
     SPI_TRIGGER_TX_RX_PDMA(SPI1);
     /* Enable SPI master DMA function */
     SPI_TRIGGER_TX_RX_PDMA(SPI0);
-    
+
     /* Check Master RX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(SPI_MASTER_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(SPI_MASTER_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for Master RX DMA transfer done interrupt flag time-out!\n");
+            i32Err = 1;
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(SPI_MASTER_RX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
-    
+
     /* Check Master TX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(SPI_MASTER_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(SPI_MASTER_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for Master TX DMA transfer done interrupt flag time-out!\n");
+            i32Err = 1;
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(SPI_MASTER_TX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
-    
+
     /* Check Slave TX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(SPI_SLAVE_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(SPI_SLAVE_TX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for Slave TX DMA transfer done interrupt flag time-out!\n");
+            i32Err = 1;
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(SPI_SLAVE_TX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
-    
+
     /* Check Slave RX DMA transfer done interrupt flag */
-    while((PDMA_GET_CH_INT_STS(SPI_SLAVE_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0);
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while((PDMA_GET_CH_INT_STS(SPI_SLAVE_RX_DMA_CH) & PDMA_ISR_BLKD_IF_Msk)==0)
+    {
+        if(--u32TimeOutCnt == 0)
+        {
+            printf("Wait for Slave RX DMA transfer done interrupt flag time-out!\n");
+            i32Err = 1;
+            goto lexit;
+        }
+    }
     /* Clear the transfer done interrupt flag */
     PDMA_CLR_CH_INT_FLAG(SPI_SLAVE_RX_DMA_CH, PDMA_ISR_BLKD_IF_Msk);
-    
+
     i32Err = 0;
     /* Check the transfer data */
     for(u32DataCount=0; u32DataCount<TEST_COUNT; u32DataCount++)
@@ -264,7 +300,9 @@ void SpiLoopTest_WithPDMA(void)
             break;
         }
     }
-    
+
+lexit:
+
     /* Disable PDMA peripheral clock */
     CLK->AHBCLK &= ~CLK_AHBCLK_PDMA_EN_Msk;
 

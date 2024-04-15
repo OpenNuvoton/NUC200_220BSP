@@ -124,7 +124,7 @@ void UART0_Init(void)
 /*---------------------------------------------------------------------------------------------------------*/
 /* MAIN function                                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
-int main(void)
+int32_t main(void)
 {
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -142,7 +142,7 @@ int main(void)
     printf("+------------------------------------------------+\n");
     printf("|    GPIO PB.3 and PE.5 Interrupt Sample Code    |\n");
     printf("+------------------------------------------------+\n\n");
-    
+
     /*-----------------------------------------------------------------------------------------------------*/
     /* GPIO Interrupt Function Test                                                                        */
     /*-----------------------------------------------------------------------------------------------------*/
@@ -153,7 +153,7 @@ int main(void)
     GPIO_EnableInt(PB, 3, GPIO_INT_RISING);
     NVIC_EnableIRQ(GPAB_IRQn);
 
-    /*  Configure PE.5 as Quasi-bidirection mode and enable interrupt by falling edge trigger */
+    /* Configure PE.5 as Quasi-bidirection mode and enable interrupt by falling edge trigger */
     GPIO_SetMode(PE, BIT5, GPIO_PMD_QUASI);
     GPIO_EnableInt(PE, 5, GPIO_INT_FALLING);
     NVIC_EnableIRQ(GPCDEF_IRQn);

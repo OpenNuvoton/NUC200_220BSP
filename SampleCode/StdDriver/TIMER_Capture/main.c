@@ -136,7 +136,7 @@ void SYS_Init(void)
     /* Set PB multi-function pins for UART0 RXD, TXD, TM0, TM2, TM3 and TM2_EXT */
     SYS->GPB_MFP &= ~(SYS_GPB_MFP_PB0_Msk | SYS_GPB_MFP_PB1_Msk);
     SYS->GPB_MFP |= (SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD);
-    
+
     SYS->GPB_MFP &= ~(SYS_GPB_MFP_PB0_Msk | SYS_GPB_MFP_PB1_Msk |
                    SYS_GPB_MFP_PB8_Msk | SYS_GPB_MFP_PB10_Msk | SYS_GPB_MFP_PB11_Msk |
                    SYS_GPB_MFP_PB2_Msk);
@@ -146,7 +146,7 @@ void SYS_Init(void)
 
     SYS->ALT_MFP &= ~SYS_ALT_MFP_PB2_Msk;
     SYS->ALT_MFP |= SYS_ALT_MFP_PB2_TM2_EXT;
-    
+
     SYS->ALT_MFP2 = SYS_ALT_MFP2_PB2_TM2_EXT;
 }
 
@@ -233,19 +233,21 @@ int main(void)
                 if((au32CAPValus[u32InitCount] - au32CAPValus[u32InitCount - 1]) != 500)
                 {
                     printf("*** FAIL ***\n");
-                    while(1);
+                    goto lexit;
                 }
             }
             u32InitCount = g_au32TMRINTCount[2];
         }
     }
 
+    printf("*** PASS ***\n");
+
+lexit:
+
     /* Stop Timer0, Timer2 and Timer3 counting */
     TIMER_Close(TIMER0);
     TIMER_Close(TIMER2);
     TIMER_Close(TIMER3);
-
-    printf("*** PASS ***\n");
 
     while(1);
 }

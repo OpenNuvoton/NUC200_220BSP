@@ -21,11 +21,13 @@
 uint32_t u32Pclk0;
 uint32_t u32Pclk1;
 
-void ProcessHardFault(void) {}
+void ProcessHardFault(void) { while(1); /* Halt here if hard fault occurs. */ }
 void SH_Return(void) {}
 
-void SYS_Init(void)
+int32_t SYS_Init(void)
 {
+    uint32_t u32TimeOutCnt;
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -34,15 +36,19 @@ void SYS_Init(void)
     CLK->PWRCON |= (CLK_PWRCON_OSC22M_EN_Msk | CLK_PWRCON_XTL12M_EN_Msk);
 
     /* Waiting for Internal RC clock ready */
-    while (!(CLK->CLKSTATUS & CLK_CLKSTATUS_OSC22M_STB_Msk));
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while (!(CLK->CLKSTATUS & CLK_CLKSTATUS_OSC22M_STB_Msk))
+        if(--u32TimeOutCnt == 0) return -1;
 
     /* Set core clock as PLL_CLOCK from PLL */
     CLK->PLLCON = PLLCON_SETTING;
-    while (!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk));
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    while (!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk))
+        if(--u32TimeOutCnt == 0) return -1;
     CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLK_S_Msk)) | CLK_CLKSEL0_HCLK_S_PLL;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
 
     PllClock        = PLL_CLOCK;            // PLL
     SystemCoreClock = PLL_CLOCK / 1;        // HCLK
@@ -65,6 +71,8 @@ void SYS_Init(void)
 
     /* I2C clock pin enable schmitt trigger */
     SYS->GPA_MFP |= (11<<SYS_GPA_MFP_GPA_TYPE_Pos);
+
+    return 0;
 }
 
 int main(void)
@@ -79,7 +87,7 @@ int main(void)
     WDT->WTCR |= (WDT_TIMEOUT_2POW18 | WDT_WTCR_WTR_Msk);
 
     /* Init system and multi-funcition I/O */
-    SYS_Init();
+    if( SYS_Init() < 0 ) goto _APROM;
 
     /* Enable FMC ISP */
     FMC->ISPCON |= FMC_ISPCON_ISPEN_Msk;

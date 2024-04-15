@@ -1218,6 +1218,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro set Brown-out detector to normal mode.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_CLEAR_BOD_LPM()             (SYS->BODCR &= ~SYS_BODCR_BOD_LPM_Msk)
 
@@ -1226,6 +1227,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro disable Brown-out detector function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_DISABLE_BOD()               (SYS->BODCR &= ~SYS_BODCR_BOD_EN_Msk)
 
@@ -1234,6 +1236,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro enable Brown-out detector function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_ENABLE_BOD()                (SYS->BODCR |= SYS_BODCR_BOD_EN_Msk)
 
@@ -1249,10 +1252,10 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
 /**
   * @brief      Get Brown-out detector status
   * @param      None
-  * @retval     0   System voltage is higher than BOD_VL setting or BOD_EN is 0.
-  * @retval     >=1 System voltage is lower than BOD_VL setting.
+  * @retval     0   System voltage is higher than BOD threshold voltage setting or BOD function is disabled.
+  * @retval     >=1 System voltage is lower than BOD threshold voltage setting.
   * @details    This macro get Brown-out detector output status.
-  *             If the BOD_EN is 0, this function always return 0.
+  *             If the BOD function is disabled, this function always return 0.
   */
 #define SYS_GET_BOD_OUTPUT()            (SYS->BODCR & SYS_BODCR_BOD_OUT_Msk)
 
@@ -1261,6 +1264,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro enable Brown-out detector interrupt function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_DISABLE_BOD_RST()           (SYS->BODCR &= ~SYS_BODCR_BOD_RSTEN_Msk)
 
@@ -1269,6 +1273,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro enable Brown-out detect reset function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_ENABLE_BOD_RST()            (SYS->BODCR |= SYS_BODCR_BOD_RSTEN_Msk)
 
@@ -1277,6 +1282,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro set Brown-out detector to low power mode.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_SET_BOD_LPM()               (SYS->BODCR |= SYS_BODCR_BOD_LPM_Msk)
 
@@ -1289,6 +1295,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   *             - \ref SYS_BODCR_BOD_VL_2_2V
   * @return     None
   * @details    This macro set Brown-out detector voltage level.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_SET_BOD_LEVEL(u32Level)     (SYS->BODCR = (SYS->BODCR & ~SYS_BODCR_BOD_VL_Msk) | (u32Level))
 
@@ -1312,10 +1319,10 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
 
 /**
   * @brief      Get reset source is from Low-Voltage-Reset
-  * @param      None     
+  * @param      None
   * @retval     0   Previous reset source is not from Low-Voltage-Reset
   * @retval     >=1 Previous reset source is from Low-Voltage-Reset
-  * @details    This macro get previous reset source is from Low-Voltage-Reset.   
+  * @details    This macro get previous reset source is from Low-Voltage-Reset.
   */
 #define SYS_IS_LVR_RST()                (SYS->RSTSRC & SYS_RSTSRC_RSTS_LVR_Msk)
 
@@ -1360,6 +1367,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro disable Low-Voltage-Reset function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_DISABLE_LVR()               (SYS->BODCR &= ~SYS_BODCR_LVR_EN_Msk)
 
@@ -1368,6 +1376,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro enable Low-Voltage-Reset function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_ENABLE_LVR()                (SYS->BODCR |= SYS_BODCR_LVR_EN_Msk)
 
@@ -1376,6 +1385,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro disable Power-on Reset function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_DISABLE_POR()               (SYS->PORCR = 0x5AA5)
 
@@ -1384,6 +1394,7 @@ Example: If user want to set PA.0 as ADC0 and PA1 as ADC1 in initial function,
   * @param      None
   * @return     None
   * @details    This macro enable Power-on Reset function.
+  *             The register write-protection function should be disabled before using this macro.
   */
 #define SYS_ENABLE_POR()                (SYS->PORCR = 0)
 
@@ -1425,11 +1436,14 @@ static __INLINE void SYS_LockReg(void)
   */
 static __INLINE void SYS_UnlockReg(void)
 {
+    uint32_t u32TimeOutCnt = __HIRC;
+
     while(SYS->REGWRPROT != SYS_REGWRPROT_REGPROTDIS_Msk)
     {
         SYS->REGWRPROT = 0x59;
         SYS->REGWRPROT = 0x16;
         SYS->REGWRPROT = 0x88;
+        if(--u32TimeOutCnt == 0) break;
     }
 }
 
@@ -1438,7 +1452,7 @@ void SYS_ClearResetSrc(uint32_t u32Src);
 uint32_t SYS_GetBODStatus(void);
 uint32_t SYS_GetResetSrc(void);
 uint32_t SYS_IsRegLocked(void);
-uint32_t  SYS_ReadPDID(void);
+uint32_t SYS_ReadPDID(void);
 void SYS_ResetChip(void);
 void SYS_ResetCPU(void);
 void SYS_ResetModule(uint32_t u32ModuleIndex);

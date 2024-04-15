@@ -275,13 +275,13 @@ extern "C"
 /*  MODULE constant definitions.                                                                           */
 /*---------------------------------------------------------------------------------------------------------*/
 
-/* APBCLK(31:30)|CLKSEL(29:28)|CLKSEL_Msk(27:25 |CLKSEL_Pos(24:20)|CLKDIV(19:18)|CLKDIV_Msk(17:10)|CLKDIV_Pos(9:5)|IP_EN_Pos(4:0) */
+/* APBCLK(31:30)|CLKSEL(29:28)|CLKSEL_Msk(27:25) |CLKSEL_Pos(24:20)|CLKDIV(19:18)|CLKDIV_Msk(17:10)|CLKDIV_Pos(9:5)|IP_EN_Pos(4:0) */
 
 #define MODULE_APBCLK(x)        (((x) >>30) & 0x3)    /*!< Calculate APBCLK offset on MODULE index, 0x0:AHBCLK, 0x1:APBCLK, 0x2:APBCLK1 */
 #define MODULE_CLKSEL(x)        (((x) >>28) & 0x3)    /*!< Calculate CLKSEL offset on MODULE index, 0x0:CLKSEL0, 0x1:CLKSEL1, 0x2:CLKSEL2, 0x3:CLKSEL3 */
 #define MODULE_CLKSEL_Msk(x)    (((x) >>25) & 0x7)    /*!< Calculate CLKSEL mask offset on MODULE index */
 #define MODULE_CLKSEL_Pos(x)    (((x) >>20) & 0x1f)   /*!< Calculate CLKSEL position offset on MODULE index */
-#define MODULE_CLKDIV(x)        (((x) >>18) & 0x3)    /*!< Calculate APBCLK CLKDIV on MODULE index, 0x0:CLKDIV, 0x1:CLKDIV1 */
+#define MODULE_CLKDIV(x)        (((x) >>18) & 0x3)    /*!< Calculate CLKDIV offset on MODULE index, 0x0:CLKDIV, 0x1:CLKDIV1 */
 #define MODULE_CLKDIV_Msk(x)    (((x) >>10) & 0xff)   /*!< Calculate CLKDIV mask offset on MODULE index */
 #define MODULE_CLKDIV_Pos(x)    (((x) >>5 ) & 0x1f)   /*!< Calculate CLKDIV position offset on MODULE index */
 #define MODULE_IP_EN_Pos(x)     (((x) >>0 ) & 0x1f)   /*!< Calculate APBCLK offset on MODULE index */
@@ -292,7 +292,7 @@ extern "C"
 #define MODULE_CLKSEL_ENC(x)        (((x) & 0x03) << 28)   /*!< CLKSEL offset on MODULE index, 0x0:CLKSEL0, 0x1:CLKSEL1, 0x2:CLKSEL2, 0x3:CLKSEL3 */
 #define MODULE_CLKSEL_Msk_ENC(x)    (((x) & 0x07) << 25)   /*!< CLKSEL mask offset on MODULE index */
 #define MODULE_CLKSEL_Pos_ENC(x)    (((x) & 0x1f) << 20)   /*!< CLKSEL position offset on MODULE index */
-#define MODULE_CLKDIV_ENC(x)        (((x) & 0x03) << 18)   /*!< APBCLK CLKDIV on MODULE index, 0x0:CLKDIV, 0x1:CLKDIV1 */
+#define MODULE_CLKDIV_ENC(x)        (((x) & 0x03) << 18)   /*!< CLKDIV offset on MODULE index, 0x0:CLKDIV, 0x1:CLKDIV1 */
 #define MODULE_CLKDIV_Msk_ENC(x)    (((x) & 0xff) << 10)   /*!< CLKDIV mask offset on MODULE index */
 #define MODULE_CLKDIV_Pos_ENC(x)    (((x) & 0x1f) <<  5)   /*!< CLKDIV position offset on MODULE index */
 #define MODULE_IP_EN_Pos_ENC(x)     (((x) & 0x1f) <<  0)   /*!< APBCLK offset on MODULE index */
@@ -398,18 +398,18 @@ extern "C"
 #define CLK_CLKSEL_PWM01_HCLK (CLK_CLKSEL1_PWM01_S_HCLK|CLK_CLKSEL2_PWM01_EXT_HCLK) /*!< HCLK Clock selection setting for PWM01 */
 #define CLK_CLKSEL_PWM01_HIRC (CLK_CLKSEL1_PWM01_S_HIRC|CLK_CLKSEL2_PWM01_EXT_HIRC) /*!< HIRC Clock selection setting for PWM01 */
 #define CLK_CLKSEL_PWM01_LIRC (CLK_CLKSEL1_PWM01_S_LIRC|CLK_CLKSEL2_PWM01_EXT_LIRC) /*!< LIRC Clock selection setting for PWM01 */
-#define CLK_CLKSEL_PWM23_HXT  (CLK_CLKSEL1_PWM23_S_HXT |CLK_CLKSEL2_PWM23_EXT_HXT)  /*!< HXT Clock selection setting for PWM23 */ 
-#define CLK_CLKSEL_PWM23_LXT  (CLK_CLKSEL1_PWM23_S_LXT |CLK_CLKSEL2_PWM23_EXT_LXT)  /*!< LXT Clock selection setting for PWM23 */ 
+#define CLK_CLKSEL_PWM23_HXT  (CLK_CLKSEL1_PWM23_S_HXT |CLK_CLKSEL2_PWM23_EXT_HXT)  /*!< HXT Clock selection setting for PWM23 */
+#define CLK_CLKSEL_PWM23_LXT  (CLK_CLKSEL1_PWM23_S_LXT |CLK_CLKSEL2_PWM23_EXT_LXT)  /*!< LXT Clock selection setting for PWM23 */
 #define CLK_CLKSEL_PWM23_HCLK (CLK_CLKSEL1_PWM23_S_HCLK|CLK_CLKSEL2_PWM23_EXT_HCLK) /*!< HCLK Clock selection setting for PWM23 */
 #define CLK_CLKSEL_PWM23_HIRC (CLK_CLKSEL1_PWM23_S_HIRC|CLK_CLKSEL2_PWM23_EXT_HIRC) /*!< HIRC Clock selection setting for PWM23 */
 #define CLK_CLKSEL_PWM23_LIRC (CLK_CLKSEL1_PWM23_S_LIRC|CLK_CLKSEL2_PWM23_EXT_LIRC) /*!< LIRC Clock selection setting for PWM23 */
-#define CLK_CLKSEL_PWM45_HXT  (CLK_CLKSEL2_PWM45_S_HXT |CLK_CLKSEL2_PWM45_EXT_HXT)  /*!< HXT Clock selection setting for PWM45 */ 
-#define CLK_CLKSEL_PWM45_LXT  (CLK_CLKSEL2_PWM45_S_LXT |CLK_CLKSEL2_PWM45_EXT_LXT)  /*!< LXT Clock selection setting for PWM45 */ 
+#define CLK_CLKSEL_PWM45_HXT  (CLK_CLKSEL2_PWM45_S_HXT |CLK_CLKSEL2_PWM45_EXT_HXT)  /*!< HXT Clock selection setting for PWM45 */
+#define CLK_CLKSEL_PWM45_LXT  (CLK_CLKSEL2_PWM45_S_LXT |CLK_CLKSEL2_PWM45_EXT_LXT)  /*!< LXT Clock selection setting for PWM45 */
 #define CLK_CLKSEL_PWM45_HCLK (CLK_CLKSEL2_PWM45_S_HCLK|CLK_CLKSEL2_PWM45_EXT_HCLK) /*!< HCLK Clock selection setting for PWM45 */
 #define CLK_CLKSEL_PWM45_HIRC (CLK_CLKSEL2_PWM45_S_HIRC|CLK_CLKSEL2_PWM45_EXT_HIRC) /*!< HIRC Clock selection setting for PWM45 */
 #define CLK_CLKSEL_PWM45_LIRC (CLK_CLKSEL2_PWM45_S_LIRC|CLK_CLKSEL2_PWM45_EXT_LIRC) /*!< LIRC Clock selection setting for PWM45 */
-#define CLK_CLKSEL_PWM67_HXT  (CLK_CLKSEL2_PWM67_S_HXT |CLK_CLKSEL2_PWM67_EXT_HXT)  /*!< HXT Clock selection setting for PWM67 */ 
-#define CLK_CLKSEL_PWM67_LXT  (CLK_CLKSEL2_PWM67_S_LXT |CLK_CLKSEL2_PWM67_EXT_LXT)  /*!< LXT Clock selection setting for PWM67 */ 
+#define CLK_CLKSEL_PWM67_HXT  (CLK_CLKSEL2_PWM67_S_HXT |CLK_CLKSEL2_PWM67_EXT_HXT)  /*!< HXT Clock selection setting for PWM67 */
+#define CLK_CLKSEL_PWM67_LXT  (CLK_CLKSEL2_PWM67_S_LXT |CLK_CLKSEL2_PWM67_EXT_LXT)  /*!< LXT Clock selection setting for PWM67 */
 #define CLK_CLKSEL_PWM67_HCLK (CLK_CLKSEL2_PWM67_S_HCLK|CLK_CLKSEL2_PWM67_EXT_HCLK) /*!< HCLK Clock selection setting for PWM67 */
 #define CLK_CLKSEL_PWM67_HIRC (CLK_CLKSEL2_PWM67_S_HIRC|CLK_CLKSEL2_PWM67_EXT_HIRC) /*!< HIRC Clock selection setting for PWM67 */
 #define CLK_CLKSEL_PWM67_LIRC (CLK_CLKSEL2_PWM67_S_LIRC|CLK_CLKSEL2_PWM67_EXT_LIRC) /*!< LIRC Clock selection setting for PWM67 */
@@ -465,6 +465,7 @@ __STATIC_INLINE uint32_t CLK_GetPLLClockFreq(void)
   * @return     None
   * @details    Use the SysTick to generate the delay time and the UNIT is in us.
   *             The SysTick clock source is from HCLK, i.e the same as system core clock.
+  *             User can use SystemCoreClockUpdate() to calculate CyclesPerUs automatically before using this function.
   */
 __STATIC_INLINE void CLK_SysTickDelay(uint32_t us)
 {
@@ -474,14 +475,14 @@ __STATIC_INLINE void CLK_SysTickDelay(uint32_t us)
 
     /* Waiting for down-count to zero */
     while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0);
-    
+
     /* Disable SysTick counter */
-    SysTick->CTRL = 0;    
+    SysTick->CTRL = 0;
 }
 
 /**
   * @brief      This function execute long delay function.
-  * @param[in]  us  Delay time. 
+  * @param[in]  us  Delay time.
   * @return     None
   * @details    Use the SysTick to generate the long delay time and the UNIT is in us.
   *             The SysTick clock source is from HCLK, i.e the same as system core clock.
@@ -491,7 +492,7 @@ __STATIC_INLINE void CLK_SysTickDelay(uint32_t us)
 __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
 {
     uint32_t delay;
-        
+
     /* It should <= 335544us for each delay loop */
     delay = 335544UL;
 
@@ -505,8 +506,8 @@ __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
         {
             delay = us;
             us = 0UL;
-        }        
-        
+        }
+
         SysTick->LOAD = delay * CyclesPerUs;
         SysTick->VAL  = (0x0UL);
         SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
@@ -516,9 +517,9 @@ __STATIC_INLINE void CLK_SysTickLongDelay(uint32_t us)
 
         /* Disable SysTick counter */
         SysTick->CTRL = 0UL;
-    
+
     }while(us > 0UL);
-    
+
 }
 
 

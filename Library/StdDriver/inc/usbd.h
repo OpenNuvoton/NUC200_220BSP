@@ -373,7 +373,7 @@ extern const S_USBD_INFO_T gsInfo;
   * @param    None
   *
   * @retval   0 USB cable is not attached.
-  *           1 USB cable is attached.
+  * @retval   1 USB cable is attached.
   *
   * @details  Check the connection state by FLDET bit of USB_FLDET register.
   *

@@ -1,12 +1,12 @@
 /**************************************************************************//**
- * @file     FMC_IAP.c
+ * @file     main.c
  * @version  V2.00
  * $Revision: 2 $
  * $Date: 15/04/15 3:10p $
  * @brief
- *           Show how to call LDROM functions from APROM. 
+ *           Show how to call LDROM functions from APROM.
  *           The code in APROM will look up the table at 0x100E00 to get the address of function of LDROM and call the function.
- *           
+ *
  * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
  *
@@ -61,11 +61,11 @@ void SYS_Init(void)
     CLK->CLKSEL0 |= CLK_CLKSEL0_HCLK_S_PLL;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     //SystemCoreClockUpdate();
     PllClock        = PLL_CLOCK;            // PLL
     SystemCoreClock = PLL_CLOCK / 1;        // HCLK
-    CyclesPerUs     = PLL_CLOCK / 1000000;  // For SYS_SysTickDelay()
+    CyclesPerUs     = PLL_CLOCK / 1000000;  // For CLK_SysTickDelay()
 
     /* Enable UART module clock */
     CLK->APBCLK |= CLK_APBCLK_UART0_EN_Msk;
@@ -73,7 +73,7 @@ void SYS_Init(void)
     /* Select UART module clock source */
     CLK->CLKSEL1 &= ~CLK_CLKSEL1_UART_S_Msk;
     CLK->CLKSEL1 |= CLK_CLKSEL1_UART_S_HXT;
-    
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -283,7 +283,7 @@ int32_t main(void)
             printf("Call LDROM function %d fail.\n", i);
         }
     }
- #endif
+#endif
 
 lexit:
 

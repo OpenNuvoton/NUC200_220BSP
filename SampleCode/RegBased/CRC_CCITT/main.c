@@ -92,7 +92,7 @@ void SYS_Init(void)
     CLK->CLKSEL1 = CLK_CLKSEL1_UART_S_PLL;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     SystemCoreClockUpdate();
 
     /*---------------------------------------------------------------------------------------------------------*/
@@ -138,9 +138,9 @@ int main(void)
     UART0_Init();
 
     printf("\n\nCPU @ %dHz\n", SystemCoreClock);
-    printf("+--------------------------------+\n");
+    printf("+---------------------------------+\n");
     printf("|    CRC CCITT Mode Sample Code   |\n");
-    printf("+--------------------------------+\n\n");
+    printf("+---------------------------------+\n\n");
 
     printf("# Calculate string \"123456789\" CRC-CCITT checksum value by CRC DMA mode.\n");
     printf("    - Seed value is 0xFFFF          \n");

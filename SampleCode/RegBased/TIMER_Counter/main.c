@@ -90,7 +90,7 @@ void SYS_Init(void)
     CLK->CLKSEL1 = CLK_CLKSEL1_UART_S_PLL | CLK_CLKSEL1_TMR1_S_HCLK;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     SystemCoreClockUpdate();
 
     /*---------------------------------------------------------------------------------------------------------*/
@@ -120,7 +120,7 @@ void UART0_Init(void)
 /*---------------------------------------------------------------------------------------------------------*/
 int main(void)
 {
-    volatile uint32_t u32InitCount;
+    volatile uint32_t u32InitCount, u32Loop;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -162,29 +162,33 @@ int main(void)
     if(TIMER_GetCounter(TIMER1) != 0)
     {
         printf("Default counter value is not 0. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER1->TCSR = 0;
-        while(1);
+        goto lexit;
     }
 
     /* To generate one counter event to T1 pin */
     GenerateGPIOBCounter(8, 1);
 
+    u32Loop = 0;
+    while(TIMER_GetCounter(TIMER1) == 0)
+    {
+        if(u32Loop++ > SystemCoreClock/1000)
+        {
+            printf("Time-out error. Please check counter input source.\n");
+            goto lexit;
+        }
+    }
+
     /* To check if TDR of Timer1 must be 1 */
-    while(TIMER_GetCounter(TIMER1) == 0);
     if(TIMER_GetCounter(TIMER1) != 1)
     {
         printf("Get unexpected counter value. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER1->TCSR = 0;
-        while(1);
+        goto lexit;
     }
 
     /* To generate remains counts to T1 pin */
     GenerateGPIOBCounter(8, (56789 - 1));
 
+    u32Loop = 0;
     while(1)
     {
         if((g_au32TMRINTCount[1] == 1) && (TIMER_GetCounter(TIMER1) == 56789))
@@ -192,7 +196,16 @@ int main(void)
             printf("Timer1 external counter input function ... PASS.\n");
             break;
         }
+
+        if(u32Loop++ > SystemCoreClock)
+        {
+            printf("Timer1 external counter input function ... FAIL.\n");
+            break;
+        }
+
     }
+
+lexit:
 
     /* Stop Timer1 counting */
     TIMER1->TCSR = 0;

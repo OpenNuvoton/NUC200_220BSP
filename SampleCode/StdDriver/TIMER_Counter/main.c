@@ -113,6 +113,7 @@ void UART0_Init(void)
 int main(void)
 {
     volatile uint32_t u32InitCount;
+    uint32_t u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -162,10 +163,7 @@ int main(void)
     if(TIMER_GetCounter(TIMER1) != 0)
     {
         printf("Default counter value is not 0. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER_Close(TIMER1);
-        while(1);
+        goto lexit;
     }
 
     /* To generate one counter event to T1 pin */
@@ -176,15 +174,13 @@ int main(void)
     if(TIMER_GetCounter(TIMER1) != 1)
     {
         printf("Get unexpected counter value. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER_Close(TIMER1);
-        while(1);
+        goto lexit;
     }
 
     /* To generate remains counts to T1 pin */
     GenerateGPIOBCounter(8, (56789 - 1));
 
+    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
     while(1)
     {
         if((g_au32TMRINTCount[1] == 1) && (TIMER_GetCounter(TIMER1) == 56789))
@@ -192,7 +188,14 @@ int main(void)
             printf("Timer1 external counter input function ... PASS.\n");
             break;
         }
+
+        if(--u32TimeOutCnt == 0){
+            printf("Wait for Timer1 interrupt and counter value time-out!\n");
+            goto lexit;
+        }
     }
+
+lexit:
 
     /* Stop Timer1 counting */
     TIMER_Close(TIMER1);
