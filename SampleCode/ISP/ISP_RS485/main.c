@@ -93,7 +93,7 @@ int32_t main(void)
     WDT->WTCR |= (WDT_TIMEOUT_2POW18 | WDT_WTCR_WTR_Msk);
 
     /* Init System, peripheral clock and multi-function I/O */
-    SYS_Init();
+    if( SYS_Init() < 0 ) goto _APROM;
 
     /* Init UART */
     UART_Init();
@@ -105,7 +105,7 @@ int32_t main(void)
     g_apromSize = GetApromSize();
     GetDataFlashInfo(&g_dataFlashAddr, &g_dataFlashSize);
 
-     /* Set Systick time-out for 300ms */
+    /* Set Systick time-out for 300ms */
     SysTick->LOAD = 300000 * CyclesPerUs;
     SysTick->VAL  = (0x00);
     SysTick->CTRL = SysTick->CTRL | SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;/* Use CPU clock */
