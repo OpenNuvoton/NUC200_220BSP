@@ -104,6 +104,10 @@ typedef enum IRQn
 #define __MPU_PRESENT           0       /*!< armikcmu does not provide a MPU present or not       */
 #define __NVIC_PRIO_BITS        2       /*!< armikcmu Supports 2 Bits for the Priority Levels     */
 #define __Vendor_SysTickConfig  0       /*!< Set to 1 if different SysTick Config is used         */
+#define __FPU_PRESENT           0
+#ifndef __SOFTFP__
+# define __SOFTFP__             1
+#endif
 
 
 /*@}*/ /* end of group CMSIS */
@@ -450,7 +454,7 @@ typedef struct
     __IO uint32_t ADCHER;        /* Offset: 0x24  ADC Channel Enable Register                                        */
     __IO uint32_t ADCMPR[2];     /* Offset: 0x28  ADC Compare Register x                                             */
     __IO uint32_t ADSR;          /* Offset: 0x30  ADC Status Register                                                */
-    __I  uint32_t RESERVE0[3];  
+    __I  uint32_t RESERVE0[3];
     __I  uint32_t ADPDMA;        /* Offset: 0x40  ADC PDMA Current Transfer Data Register                            */
 
 } ADC_T;
@@ -583,15 +587,15 @@ typedef struct
  * |        |          |When the default clock source is from external 4~24 MHz high speed crystal, this bit is set to 1 automatically.
  * |        |          |0 = External 4~24 MHz high speed crystal oscillator (HXT) Disabled.
  * |        |          |1 = External 4~24 MHz high speed crystal oscillator (HXT) Enabled.
- * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register.    
+ * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register.
  * |[1]     |XTL32K_EN |External 32.768 KHz Low Speed Crystal Enable (LXT) Control (Write Protect)
  * |        |          |0 = External 32.768 kHz low speed crystal oscillator (LXT) Disabled.
  * |        |          |1 = External 32.768 kHz low speed crystal oscillator (LXT) Enabled (Normal operation).
- * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register. 
+ * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register.
  * |[2]     |OSC22M_EN |Internal 22.1184 MHz High Speed Oscillator (HIRC) Enable Control (Write Protect)
  * |        |          |0 = Internal 22.1184 MHz high speed oscillator (HIRC) Disabled.
  * |        |          |1 = Internal 22.1184 MHz high speed oscillator (HIRC) Enabled.
- * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register. 
+ * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register.
  * |[3]     |OSC10K_EN |Internal 10 KHz Low Speed Oscillator (LIRC) Enable Control (Write Protect)
  * |        |          |0 = Internal 10 kHz low speed oscillator (LIRC) Disabled.
  * |        |          |1 = Internal 10 kHz low speed oscillator (LIRC) Enabled.
@@ -618,7 +622,7 @@ typedef struct
  * |        |          |(b) if the PD_WAIT_CPU is 1, then the chip keeps active till the CPU sleep mode is also active and then the chip enters Power-down mode. (recommend)
  * |        |          |When chip wakes up from Power-down mode, this bit is cleared by hardware.
  * |        |          |User needs to set this bit again for next Power-down.
- * |        |          |In Power-down mode, external 4~24 MHz high speed crystal oscillator and the internal 22.1184 MHz high speed oscillator will be disabled in this mode, 
+ * |        |          |In Power-down mode, external 4~24 MHz high speed crystal oscillator and the internal 22.1184 MHz high speed oscillator will be disabled in this mode,
  * |        |          |but the external 32.768 kHz low speed crystal and internal 10 kHz low speed oscillator are not controlled by Power-down mode.
  * |        |          |In Power- down mode, the PLL and system clock are disabled, and ignored the clock source selection.
  * |        |          |The clocks of peripheral are not controlled by Power-down mode, if the peripheral clock source is from external 32.768 kHz low speed crystal oscillator or the internal 10 kHz low speed oscillator.
@@ -650,7 +654,7 @@ typedef struct
  * |        |          |1 = Watchdog Timer clock Enabled.
  * |        |          |Note: This bit is write protected bit. Refer to the REGWRPROT register.
  * |[1]     |RTC_EN    |Real-Time-Clock APB Interface Clock Enable Control
- * |        |          |This bit is used to control the RTC APB clock only. The RTC clock source is from the external 32.768 kHz low speed crystal. 
+ * |        |          |This bit is used to control the RTC APB clock only. The RTC clock source is from the external 32.768 kHz low speed crystal.
  * |        |          |0 = RTC clock Disabled.
  * |        |          |1 = RTC clock Enabled.
  * |[2]     |TMR0_EN   |Timer0 Clock Enable Control
@@ -745,10 +749,10 @@ typedef struct
  * |[7]     |CLK_SW_FAIL|Clock Switching Fail Flag
  * |        |          |0 = Clock switching success.
  * |        |          |1 = Clock switching failed.
- * |        |          |This bit is updated when software switches system clock source. 
- * |        |          |If switch target clock is stable, this bit will be set to 0. 
+ * |        |          |This bit is updated when software switches system clock source.
+ * |        |          |If switch target clock is stable, this bit will be set to 0.
  * |        |          |If switch target clock is not stable, this bit will be set to 1.
- * |        |          |Write 1 to clear the bit to 0. 
+ * |        |          |Write 1 to clear the bit to 0.
  * @var CLK_T::CLKSEL0
  * Offset: 0x10  Clock Source Select Control Register 0
  * ---------------------------------------------------------------------------------------------------
@@ -984,7 +988,7 @@ typedef struct
  * |[15:14] |OUT_DV    |PLL Output Divider Control Bits
  * |        |          |Refer to the PLL formulas.
  * |[16]    |PD        |Power-Down Mode
- * |        |          |If the PWR_DOWN_EN bit is set to 1 in PWRCON register, the PLL will enter Power-down mode too.     
+ * |        |          |If the PWR_DOWN_EN bit is set to 1 in PWRCON register, the PLL will enter Power-down mode too.
  * |        |          |0 = PLL is in Normal mode.
  * |        |          |1 = PLL is in Power-down mode (default).
  * |[17]    |BP        |PLL Bypass Control
@@ -1066,7 +1070,7 @@ typedef struct
     __IO uint32_t CLKSEL2;       /* Offset: 0x1C  Clock Source Select Control Register 2                             */
     __IO uint32_t PLLCON;        /* Offset: 0x20  PLL Control Register                                               */
     __IO uint32_t FRQDIV;        /* Offset: 0x24  Frequency Divider Control Register                                 */
-    __IO uint32_t RESERVE[2];   
+    __IO uint32_t RESERVE[2];
     __IO uint32_t APBCLK1;       /* Offset: 0x30  APB Devices Clock Enable Control Register 1                        */
     __IO uint32_t CLKSEL3;       /* Offset: 0x34  Clock Source Select Control Register 3                             */
     __IO uint32_t CLKDIV1;       /* Offset: 0x38  Clock Divider Number Register 1                                    */
@@ -1564,11 +1568,11 @@ typedef struct
 
     __IO uint32_t CTL;           /* Offset: 0x00  CRC Control Register                                               */
     __IO uint32_t DMASAR;        /* Offset: 0x04  CRC DMA Source Address Register                                    */
-    __I  uint32_t RESERVED0;    
+    __I  uint32_t RESERVED0;
     __IO uint32_t DMABCR ;       /* Offset: 0x0C  CRC DMA Transfer Byte Count Register                               */
-    __I  uint32_t RESERVED1;    
+    __I  uint32_t RESERVED1;
     __I  uint32_t DMACSAR;       /* Offset: 0x14  CRC DMA Current Source Address Register                            */
-    __I  uint32_t RESERVED2;    
+    __I  uint32_t RESERVED2;
     __I  uint32_t DMACBCR;       /* Offset: 0x1C  CRC DMA Current Transfer Byte Count Register                       */
     __IO uint32_t DMAIER ;       /* Offset: 0x20  CRC DMA Interrupt Enable Register                                  */
     __IO uint32_t DMAISR;        /* Offset: 0x24  CRC DMA Interrupt Status Register                                  */
@@ -1949,7 +1953,7 @@ typedef struct
     __IO uint32_t ISPTRG;        /* Offset: 0x10  IISP Trigger Control Register                                      */
     __I  uint32_t DFBADR;        /* Offset: 0x14  Data Flash Base Address Register                                   */
     __IO uint32_t FATCON;        /* Offset: 0x18  Flash Access Time Control Register                                 */
-    __I  uint32_t RESERVED[9];  
+    __I  uint32_t RESERVED[9];
     __IO uint32_t ISPSTA;        /* Offset: 0x40  ISP Status Register                                                */
 
 } FMC_T;
@@ -2080,7 +2084,7 @@ typedef struct
  * |        |          |Each of these bits is used to control if the digital input path of corresponding GPIO pin is disabled.
  * |        |          |If input is analog signal, users can disable GPIO digital input path to avoid current leakage.
  * |        |          |0 = I/O digital input path Enabled.
- * |        |          |1 = I/O digital input path Disabled (digital input tied to low). 
+ * |        |          |1 = I/O digital input path Disabled (digital input tied to low).
  * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  * @var GPIO_T::DOUT
  * Offset: 0x08  GPIO Port [A/B/C/D/E/F] Data Output Value
@@ -2091,7 +2095,7 @@ typedef struct
  * |        |          |Each of these bits controls the status of a GPIO pin when the GPIO pin is configured as Push-pull output, open-drain output or quasi-bidirectional mode.
  * |        |          |0 = GPIO port [A/B/C/D/E/F] Pin[n] will drive Low if the GPIO pin is configured as Push-pull output, Open-drain output or Quasi-bidirectional mode.
  * |        |          |1 = GPIO port [A/B/C/D/E/F] Pin[n] will drive High if the GPIO pin is configured as Push-pull output or Quasi-bidirectional mode.
- * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE. 
+ * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  * @var GPIO_T::DMASK
  * Offset: 0x0C  GPIO Port [A/B/C/D/E/F] Data Output Write Mask
  * ---------------------------------------------------------------------------------------------------
@@ -2103,7 +2107,7 @@ typedef struct
  * |        |          |If the write signal is masked, write data to the protect bit is ignored.
  * |        |          |0 = Corresponding GPIOx_DOUT[n] bit can be updated.
  * |        |          |1 = Corresponding GPIOx_DOUT[n] bit protected.
- * |        |          |Note1: This function only protects the corresponding GPIOx_DOUT[n] bit, and will not protect the corresponding bit control register (PAn_PDIO, PBn_PDIO, PCn_PDIO, PDn_PDIO, PEn_PDIO and PFn_PDIO). 
+ * |        |          |Note1: This function only protects the corresponding GPIOx_DOUT[n] bit, and will not protect the corresponding bit control register (PAn_PDIO, PBn_PDIO, PCn_PDIO, PDn_PDIO, PEn_PDIO and PFn_PDIO).
  * |        |          |Note2: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  * @var GPIO_T::PIN
  * Offset: 0x10  GPIO Port [A/B/C/D/E/F] Pin Value
@@ -2113,7 +2117,7 @@ typedef struct
  * |[n]     |PINn      |Port [A/B/C/D/E/F] Pin Values
  * |        |          |Each bit of the register reflects the actual status of the respective GPIO pin.
  * |        |          |If the bit is 1, it indicates the corresponding pin status is high, else the pin status is low.
- * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE. 
+ * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  * @var GPIO_T::DBEN
  * Offset: 0x14  GPIO Port [A/B/C/D/E/F] De-bounce Enable
  * ---------------------------------------------------------------------------------------------------
@@ -2144,7 +2148,7 @@ typedef struct
  * |        |          |If both levels to trigger interrupt are set, the setting is ignored and no interrupt will occur.
  * |        |          |The de-bounce function is valid only for edge triggered interrupt.
  * |        |          |If the interrupt mode is level triggered, the de-bounce enable bit is ignored.
- * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE. 
+ * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  * @var GPIO_T::IEN
  * Offset: 0x1C  GPIO Port [A/B/C/D/E/F] Interrupt Enable
  * ---------------------------------------------------------------------------------------------------
@@ -2179,8 +2183,8 @@ typedef struct
  * |        |          |1 = GPIOx[n] generates an interrupt.
  * |        |          |Write :
  * |        |          |0= No action.
- * |        |          |1= Clear the corresponding pending interrupt. 
- * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE. 
+ * |        |          |1= Clear the corresponding pending interrupt.
+ * |        |          |Note: Max. n = 3 for GPIOF; Max. n = 15 for GPIOA/GPIOB/GPIOC/GPIOD/GPIOE.
  */
 
     __IO uint32_t PMD;           /* Offset: 0x00  GPIO Port [A/B/C/D/E/F] Pin I/O Mode Control                       */
@@ -2586,7 +2590,7 @@ typedef struct
     __IO uint32_t I2CADM1;       /* Offset: 0x28  I2C Slave Address Mask Register1                                   */
     __IO uint32_t I2CADM2;       /* Offset: 0x2C  I2C Slave Address Mask Register2                                   */
     __IO uint32_t I2CADM3;       /* Offset: 0x30  I2C Slave Address Mask Register3                                   */
-    __I  uint32_t RESERVED0[2]; 
+    __I  uint32_t RESERVED0[2];
     __IO uint32_t I2CWKUPCON;    /* Offset: 0x3C  I2C Wake-up Control Register                                       */
     __IO uint32_t I2CWKUPSTS;    /* Offset: 0x40  I2C Wake-up Status Register                                        */
 
@@ -3288,7 +3292,7 @@ typedef struct
     __I  uint32_t CBCR;          /* Offset: 0x1C  PDMA Channel x Current Transfer Byte Count Register                */
     __IO uint32_t IER;           /* Offset: 0x20  PDMA Channel x Interrupt Enable Register                           */
     __IO uint32_t ISR;           /* Offset: 0x24  PDMA Channel x Interrupt Status Register                           */
-    __I  uint32_t RESERVE[22];  
+    __I  uint32_t RESERVE[22];
     __I  uint32_t SBUF;          /* Offset: 0x80  PDMA Channel x Shared Buffer FIFO x Register                       */
 
 } PDMA_T;
@@ -4769,7 +4773,7 @@ typedef struct
     __IO uint32_t PBCR;          /* Offset: 0x3C  PWM Backward Compatible Register                                   */
     __IO uint32_t PIER;          /* Offset: 0x40  PWM Interrupt Enable Register                                      */
     __IO uint32_t PIIR;          /* Offset: 0x44  PWM Interrupt Indication Register                                  */
-    __I  uint32_t RESERVE1[2];  
+    __I  uint32_t RESERVE1[2];
     __IO uint32_t CCR0;          /* Offset: 0x50  PWM Capture Control Register 0                                     */
     __IO uint32_t CCR2;          /* Offset: 0x54  PWM Capture Control Register 2                                     */
     __IO uint32_t CRLR0;         /* Offset: 0x58  PWM Capture Rising Latch Register (Channel 0)                      */
@@ -5378,7 +5382,7 @@ typedef struct
     __IO uint32_t RIER;          /* Offset: 0x28  RTC Interrupt Enable Register                                      */
     __IO uint32_t RIIR;          /* Offset: 0x2C  RTC Interrupt Indicator Register                                   */
     __IO uint32_t TTR;           /* Offset: 0x30  RTC Time Tick Register                                             */
-    __I  uint32_t RESERVED[2];  
+    __I  uint32_t RESERVED[2];
     __IO uint32_t SPRCTL;        /* Offset: 0x3C  RTC Spare Functional Control Register                              */
     __IO uint32_t SPR[20];       /* Offset: 0x40  RTC Spare Register 0 ~ 19                                          */
 
@@ -5998,7 +6002,7 @@ typedef struct
  * |        |          |not set this flag.
  * |[6]     |RX_EBR_F  |Receiver Break Error Status Flag (Read Only)
  * |        |          |This bit is set to logic 1 whenever the received data input (RX) held in the "spacing state"
- * |        |          |(logic 0) is longer than a full word transmission time (that is, the total time of "start bit" 
+ * |        |          |(logic 0) is longer than a full word transmission time (that is, the total time of "start bit"
  * |        |          |+ data bits + parity + stop bits).
  * |        |          |Note1:
  * |        |          |This bit is read only, but it can be cleared by writing 1 to it.
@@ -7006,14 +7010,14 @@ typedef struct
     __IO uint32_t CNTRL;         /* Offset: 0x00  Control and Status Register                                        */
     __IO uint32_t DIVIDER;       /* Offset: 0x04  Clock Divider Register                                             */
     __IO uint32_t SSR;           /* Offset: 0x08  Slave Select Register                                              */
-    __I  uint32_t RESERVE0;     
+    __I  uint32_t RESERVE0;
     __I  uint32_t RX[2];         /* Offset: 0x10  Data Receive Register                                              */
-    __I  uint32_t RESERVE1;     
-    __I  uint32_t RESERVE2;     
+    __I  uint32_t RESERVE1;
+    __I  uint32_t RESERVE2;
     __O  uint32_t TX[2];         /* Offset: 0x20  Data Transmit Register 0                                           */
-    __I  uint32_t RESERVE3;     
-    __I  uint32_t RESERVE4;     
-    __I  uint32_t RESERVE5;     
+    __I  uint32_t RESERVE3;
+    __I  uint32_t RESERVE4;
+    __I  uint32_t RESERVE5;
     __IO uint32_t VARCLK;        /* Offset: 0x34  Variable Clock Pattern Register                                    */
     __IO uint32_t DMA;           /* Offset: 0x38  SPI DMA Control Register                                           */
     __IO uint32_t CNTRL2;        /* Offset: 0x3C  Control and Status Register 2                                      */
@@ -7449,50 +7453,50 @@ typedef struct
  * |        |          |(PA0_SC0PWR, GPA_MFP0) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC0 function is selected.
- * |        |          |(1, 1) = SC0_PWR function is selected.  
+ * |        |          |(1, 1) = SC0_PWR function is selected.
  * |[1]     |GPA_MFP1  |PA.1 Pin Function Selection
  * |        |          |Bit PA1_SC0RST (ALT_MFP1[3]) and GPA_MFP[1] determine the PA.1 function.
  * |        |          |(PA1_SC0RST, GPA_MFP1) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC1 function is selected.
- * |        |          |(1, 1) = SC0_RST function is selected.          
+ * |        |          |(1, 1) = SC0_RST function is selected.
  * |[2]     |GPA_MFP2  |PA.2 Pin Function Selection
  * |        |          |Bits PA2_SC0CLK (ALT_MFP1[0]) and GPA_MFP[2] determine the PA.2 function.
  * |        |          |(PA2_SC0CLK, GPA_MFP2) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC2 function is selected.
- * |        |          |(1, 1) = SC0_CLK function is selected.      
- * |[3]     |GPA_MFP3  |PA.3 Pin Function Selection   
+ * |        |          |(1, 1) = SC0_CLK function is selected.
+ * |[3]     |GPA_MFP3  |PA.3 Pin Function Selection
  * |        |          |Bits PA3_SC0DAT (ALT_MFP1[1]) and GPA_MFP[3] determine the PA.3 function.
  * |        |          |(PA3_SC0DAT, GPA_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC3 function is selected.
  * |        |          |(1, 1) = SC0_DAT function is selected.
- * |[4]     |GPA_MFP4  |PA.4 Pin Function Selection     
+ * |[4]     |GPA_MFP4  |PA.4 Pin Function Selection
  * |        |          |Bits PA4_SC1PWR (ALT_MFP1[7]) and GPA_MFP[4] determine the PA.4 function.
  * |        |          |(PA4_SC1PWR, GPA_MFP4) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC4 function is selected.
  * |        |          |(1, 1) = SC1_PWR function is selected.
- * |[5]     |GPA_MFP5  |PA.5 Pin Function Selection    
+ * |[5]     |GPA_MFP5  |PA.5 Pin Function Selection
  * |        |          |Bits PA5_SC1RST (ALT_MFP1[8]) and GPA_MFP[5] determine the PA.5 function.
  * |        |          |(PA5_SC1RST, GPA_MFP5) value and function mapping is as following list,
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC5 function is selected.
- * |        |          |(1, 1) = SC1_RST function is selected.    
+ * |        |          |(1, 1) = SC1_RST function is selected.
  * |[6]     |GPA_MFP6  |PA.6 Pin Function Selection
  * |        |          |Bits PA6_SC1CLK (ALT_MFP1[5]) and GPA_MFP[6] determine the PA.6 function.
  * |        |          |(PA6_SC1CLK, GPA_MFP6) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC6 function is selected.
- * |        |          |(1, 1) = SC1_CLK function is selected.   
+ * |        |          |(1, 1) = SC1_CLK function is selected.
  * |[7]     |GPA_MFP7  |PA.7 Pin Function Selection
  * |        |          |Bits PA7_SC1DAT (ALT_MFP1[6]), PA7_S21 (ALT_MFP[2]) and GPA_MFP[7] determine the PA.7 function.
  * |        |          |(PA7_SC1DAT, PA7_S21, GPA_MFP7) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = ADC7 function is selected.
  * |        |          |(0, 1, 1) = SPI2_SS1 function is selected.
- * |        |          |(1, 0, 1) = SC1_DAT function is selected. 
+ * |        |          |(1, 0, 1) = SC1_DAT function is selected.
  * |[8]     |GPA_MFP8  |PA.8 Pin Function Selection
  * |        |          |Bit GPA_MFP[8] determines the PA.8 function.
  * |        |          |0 = GPIO function is selected to the pin PA.8.
@@ -7504,36 +7508,36 @@ typedef struct
  * |[10]    |GPA_MFP10 |PA.10 Pin Function Selection
  * |        |          |Bit GPA_MFP[10] determine the PA.10 function.
  * |        |          |0 = GPIO function is selected to the pin PA.10.
- * |        |          |1 = I2C1_SDA function is selected to the pin PA.10.  
+ * |        |          |1 = I2C1_SDA function is selected to the pin PA.10.
  * |[11]    |GPA_MFP11 |PA.11 Pin Function Selection
  * |        |          |Bit GPA_MFP[11] determine the PA.11 function.
  * |        |          |0 = GPIO function is selected to the pin PA.11.
- * |        |          |1 = I2C1_SCL function is selected to the pin PA.11. 
+ * |        |          |1 = I2C1_SCL function is selected to the pin PA.11.
  * |[12]    |GPA_MFP12 |PA.12 Pin Function Selection
  * |        |          |Bits PA12_SC2DAT (ALT_MFP1[11]) and GPA_MFP[12] determine the PA.12 function.
  * |        |          |(PA12_SC2DAT, GPA_MFP12) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM0 function is selected.
- * |        |          |(1, 1) = SC2_DAT function is selected.  
- * |[13]    |GPA_MFP13 |PA.13 Pin Function Selection     
+ * |        |          |(1, 1) = SC2_DAT function is selected.
+ * |[13]    |GPA_MFP13 |PA.13 Pin Function Selection
  * |        |          |Bits PA13_SC2CLK (ALT_MFP1[10]) and GPA_MFP[13] determine the PA.13 function.
  * |        |          |(PA13_SC2CLK, GPA_MFP13) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM1 function is selected.
- * |        |          |(1, 1) = SC2_CLK function is selected.     
+ * |        |          |(1, 1) = SC2_CLK function is selected.
  * |[14]    |GPA_MFP14 |PA.14 Pin Function Selection
  * |        |          |Bits PA14_SC2RST (ALT_MFP1[13]) and GPA_MFP[14] determine the PA.14 function.
  * |        |          |(PA14_SC2RST, GPA_MFP14) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM2 function is selected.
- * |        |          |(1, 1) = SC2_RST function is selected.       
- * |[15]    |GPA_MFP15 |PA.15 Pin Function Selection     
+ * |        |          |(1, 1) = SC2_RST function is selected.
+ * |[15]    |GPA_MFP15 |PA.15 Pin Function Selection
  * |        |          |Bits PA15_SC2PWR (ALT_MFP1[12]), PA15_I2SMCLK (ALT_MFP[9]) and GPA_MFP[15] determine the PA.15 function.
  * |        |          |(PA15_SC2PWR, PA15_I2SMCLK, GPA_MFP15) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = PWM3 function is selected.
  * |        |          |(0, 1, 1) = I2S_MCLK function is selected.
- * |        |          |(1, 0, 1) = SC2_PWR function is selected.         
+ * |        |          |(1, 0, 1) = SC2_PWR function is selected.
  * |[16:31] |GPA_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOA[15:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOA[15:0] I/O input Schmitt Trigger function Enabled.
@@ -7542,72 +7546,72 @@ typedef struct
  * ---------------------------------------------------------------------------------------------------
  * |Bits    |Field     |Descriptions
  * | :----: | :----:   | :---- |
- * |[0]     |GPB_MFP0  |PB.0 Pin Function Selection     
+ * |[0]     |GPB_MFP0  |PB.0 Pin Function Selection
  * |        |          |Bit GPB_MFP[0] determines the PB.0 function.
  * |        |          |0 = GPIO function is selected to the pin PB.0.
- * |        |          |1 = UART0_RXD function is selected to the pin PB.0.       
+ * |        |          |1 = UART0_RXD function is selected to the pin PB.0.
  * |[1]     |GPB_MFP1  |PB.1 Pin Function Selection
  * |        |          |Bit GPB_MFP[1] determines the PB.1 function.
  * |        |          |0 = GPIO function is selected to the pin PB.1.
- * |        |          |1 = UART0_TXD function is selected to the pin PB.1.     
+ * |        |          |1 = UART0_TXD function is selected to the pin PB.1.
  * |[2]     |GPB_MFP2  |PB.2 Pin Function Selection
  * |        |          |Bits PB2_CPO0 (ALT_MFP[30]), PB2_T2EX (ALT_MFP[26]) and GPB_MFP[2] determine the PB.2 function.
  * |        |          |(PB2_CPO0, PB2_T2EX, GPB_MFP2) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = UART0_nRTS function is selected.
  * |        |          |(0, 1, 1) = TM2_EXT function is selected.
- * |        |          |(1, 0, 1) = ACMP0_O function is selected.     
+ * |        |          |(1, 0, 1) = ACMP0_O function is selected.
  * |[3]     |GPB_MFP3  |PB.3 Pin Function Selection
  * |        |          |Bits PB3_SC2CD (ALT_MFP1[14]), PB3_T3EX (ALT_MFP[27]) and GPB_MFP[3] determine the PB.3 function.
  * |        |          |(PB3_SC2CD, PB3_T3EX, GPB_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = UART0_nCTS function is selected.
  * |        |          |(0, 1, 1) = TM3_EXT function is selected.
- * |        |          |(1, 0, 1) = SC2_CD function is selected.             
+ * |        |          |(1, 0, 1) = SC2_CD function is selected.
  * |[4]     |GPB_MFP4  |PB.4 Pin Function Selection
  * |        |          |Bit GPB_MFP[4] determines the PB.4 function.
  * |        |          |0 = GPIO function is selected to the pin PB.4.
- * |        |          |1 = UART1_RXD function is selected to the pin PB.4.     
+ * |        |          |1 = UART1_RXD function is selected to the pin PB.4.
  * |[5]     |GPB_MFP5  |PB 5 Pin Function Selection
  * |        |          |Bit GPB_MFP[5] determines the PB.5 function.
  * |        |          |0 = GPIO function is selected to the pin PB.5.
- * |        |          |1 = UART1_TXD function is selected to the pin PB.5.     
- * |[6]     |GPB_MFP6  |PB.6 Pin Function Selection 
+ * |        |          |1 = UART1_TXD function is selected to the pin PB.5.
+ * |[6]     |GPB_MFP6  |PB.6 Pin Function Selection
  * |        |          |Bit GPB_MFP[6] determines the PB.6 function.
  * |        |          |0 = GPIO function is selected to the pin PB.6.
  * |        |          |1 = UART1_nRTS function is selected to the pin PB.6.
  * |[7]     |GPB_MFP7  |PB.7 Pin Function Selection
  * |        |          |Bit GPB_MFP[7] determines the PB.7 function.
  * |        |          |0 = GPIO function is selected to the pin PB.7.
- * |        |          |1 = UART1_nCTS function is selected to the pin PB.7.        
+ * |        |          |1 = UART1_nCTS function is selected to the pin PB.7.
  * |[8]     |GPB_MFP8  |PB.8 Pin Function Selection
  * |        |          |Bits PB8_CLKO (ALT_MFP[29]) and GPB_MFP[8] determine the PB.8 function.
- * |        |          |(PB8_CLKO, GPB_MFP8) value and function mapping is as following list. 
+ * |        |          |(PB8_CLKO, GPB_MFP8) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM0 function is selected.
- * |        |          |(1, 1) = CLKO function is selected.           
+ * |        |          |(1, 1) = CLKO function is selected.
  * |[9]     |GPB_MFP9  |PB.9 Pin Function Selection
  * |        |          |Bits PB9_S11 (ALT_MFP[1]) and GPB_MFP[9] determine the PB.9 function.
  * |        |          |(PB9_S11, GPB_MFP9) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM1 function is selected.
- * |        |          |(1, 1) = SPI1_SS1 function is selected.         
+ * |        |          |(1, 1) = SPI1_SS1 function is selected.
  * |[10]    |GPB_MFP10 |PB.10 Pin Function Selection
  * |        |          |Bits PB10_S01 (ALT_MFP[0]) and GPB_MFP[10] determine the PB.10 function.
  * |        |          |(PB10_S01, GPB_MFP10) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM2 function is selected.
- * |        |          |(1, 1) = SPI0_SS1 function is selected.     
+ * |        |          |(1, 1) = SPI0_SS1 function is selected.
  * |[11]    |GPB_MFP11 |PB.11 Pin Function Selection
  * |        |          |Bits PB11_PWM4 (ALT_MFP[4]) and GPB_MFP[11] determine the PB.11 function.
  * |        |          |(PB11_PWM4, GPB_MFP11) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
- * |        |          |(0, 1) = TM3 function is selected.     
- * |        |          |(1, 1) = PWM4 function is selected. 
+ * |        |          |(0, 1) = TM3 function is selected.
+ * |        |          |(1, 1) = PWM4 function is selected.
  * |[13]    |GPB_MFP13 |PB.13 Pin Function Selection
  * |        |          |Bit GPB_MFP[13] determines the PB.13 function.
  * |        |          |0 = GPIO function is selected.
- * |        |          |1 = ACMP1_O function is selected.   
+ * |        |          |1 = ACMP1_O function is selected.
  * |[14]    |GPB_MFP14 |PB.14 Pin Function Selection
  * |        |          |Bits PB14_S31 (ALT_MFP[3]) and GPB_MFP[14] determine the PB.14 function.
  * |        |          |(PB14_S31, GPB_MFP14) value and function mapping is as following list.
@@ -7619,7 +7623,7 @@ typedef struct
  * |        |          |(PB15_T0EX, GPB_MFP15) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = INT1 function is selected.
- * |        |          |(1, 1) = TM0_EXT function is selected.  
+ * |        |          |(1, 1) = TM0_EXT function is selected.
  * |[16:31] |GPB_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOB[15:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOB[15:0] I/O input Schmitt Trigger function Enabled.
@@ -7633,13 +7637,13 @@ typedef struct
  * |        |          |(PC0_I2SLRCLK, GPC_MFP0) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_SS0 function is selected.
- * |        |          |(1, 1) = I2S_LRCLK function is selected.          
+ * |        |          |(1, 1) = I2S_LRCLK function is selected.
  * |[1]     |GPC_MFP1  |PC.1 Pin Function Selection
  * |        |          |Bits PC1_I2SBCLK (ALT_MFP[6]) and GPC_MFP[1] determine the PC.1 function.
  * |        |          |(PC1_I2SBCLK, GPC_MFP1) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_CLK function is selected.
- * |        |          |(1, 1) = I2S_BCLK function is selected.     
+ * |        |          |(1, 1) = I2S_BCLK function is selected.
  * |[2]     |GPC_MFP2  |PC.2 Pin Function Selection
  * |        |          |Bits PC2_I2SDI (ALT_MFP[7]) and GPC_MFP[2] determine the PC.2 function.
  * |        |          |(PC2_I2SDI, GPC_MFP2) value and function mapping is as following list.
@@ -7651,59 +7655,59 @@ typedef struct
  * |        |          |(PC3_I2SDO, GPC_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_MOSI0 function is selected.
- * |        |          |(1, 1) = I2S_DO function is selected.     
+ * |        |          |(1, 1) = I2S_DO function is selected.
  * |[4]     |GPC_MFP4  |PC.4 Pin Function Selection
  * |        |          |Bit GPC_MFP[9] determines the PC.4 function.
  * |        |          |0 = GPIO function is selected to the pin PC.4.
- * |        |          |1 = SPI0_MISO1 function is selected to the pin PC.4.     
+ * |        |          |1 = SPI0_MISO1 function is selected to the pin PC.4.
  * |[5]     |GPC_MFP5  |PC.5 Pin Function Selection
  * |        |          |Bit GPC_MFP[5] determines the PC.5 function.
  * |        |          |0 = GPIO function is selected to the pin PC.5.
- * |        |          |1 = SPI0_MOSI1 function is selected to the pin PC.5.     
+ * |        |          |1 = SPI0_MOSI1 function is selected to the pin PC.5.
  * |[6]     |GPC_MFP6  |PC.6 Pin Function Selection
  * |        |          |Bits PC6_SC0CD (ALT_MFP1[4]) and GPC_MFP[6] determine the PC.6 function.
  * |        |          |(PC6_SC0CD, GPC_MFP6) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ACMP0_P function is selected.
- * |        |          |(1, 1) = SC0_CD function is selected.    
+ * |        |          |(1, 1) = SC0_CD function is selected.
  * |[7]     |GPC_MFP7  |PC.7 Pin Function Selection
  * |        |          |Bits PC7_SC1CD (ALT_MFP1[9]) and GPC_MFP[7] determine the PC.7 function.
  * |        |          |(PC7_SC1CD, GPC_MFP7) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ACMP0_N function is selected.
- * |        |          |(1, 1) = SC1_CD function is selected.     
+ * |        |          |(1, 1) = SC1_CD function is selected.
  * |[8]     |GPC_MFP8  |PC.8 Pin Function Selection
  * |        |          |Bit GPC_MFP[8] determines the PC.8 function.
  * |        |          |0 = GPIO function is selected to the pin PC.8.
- * |        |          |1 = SPI1_SS0 function is selected to the pin PC.8.    
+ * |        |          |1 = SPI1_SS0 function is selected to the pin PC.8.
  * |[9]     |GPC_MFP9  |PC.9 Pin Function Selection
  * |        |          |Bit GPC_MFP[9] determines the PC.9 function.
  * |        |          |0 = GPIO function is selected to the pin PC.9.
- * |        |          |1 = SPI1_CLK function is selected to the pin PC.9.          
+ * |        |          |1 = SPI1_CLK function is selected to the pin PC.9.
  * |[10]    |GPC_MFP10 |PC.10 Pin Function Selection
  * |        |          |Bit GPC_MFP[10] determines the PC.10 function.
  * |        |          |0 = GPIO function is selected to the pin PC.10.
- * |        |          |1 = SPI1_MISO0 function is selected to the pin PC.10.    
+ * |        |          |1 = SPI1_MISO0 function is selected to the pin PC.10.
  * |[11]    |GPC_MFP11 |PC.11 Pin Function Selection
  * |        |          |Bit GPC_MFP[11] determines the PC.11 function.
  * |        |          |0 = GPIO function is selected to the pin PC.11.
- * |        |          |1 = SPI1_MOSI0 function is selected to the pin PC.11.        
+ * |        |          |1 = SPI1_MOSI0 function is selected to the pin PC.11.
  * |[12]    |GPC_MFP12 |PC.12 Pin Function Selection
  * |        |          |Bit GPC_MFP[12] determines the PC.12 function.
  * |        |          |0 = GPIO function is selected to the pin PC.12.
- * |        |          |1 = SPI1_MISO1 function is selected to the pin PC.12.      
+ * |        |          |1 = SPI1_MISO1 function is selected to the pin PC.12.
  * |[13]    |GPC_MFP13 |PC.13 Pin Function Selection
  * |        |          |Bit GPC_MFP[13] determines the PC.13 function.
  * |        |          |0 = GPIO function is selected to the pin PC.13.
- * |        |          |1 = SPI1_MOSI1 function is selected to the pin PC.13.     
+ * |        |          |1 = SPI1_MOSI1 function is selected to the pin PC.13.
  * |[14]    |GPC_MFP14 |PC.14 Pin Function Selection
  * |        |          |Bit GPC_MFP[14] determines the PC.14 function.
  * |        |          |0 = GPIO function is selected to the pin PC.14.
- * |        |          |1 = ACMP1_P function is selected to the pin PC.14.      
+ * |        |          |1 = ACMP1_P function is selected to the pin PC.14.
  * |[15]    |GPC_MFP15 |PC.15 Pin Function Selection
  * |        |          |Bit GPC_MFP[15] determines the PC.15 function.
  * |        |          |0 = GPIO function is selected to the pin PC.15.
- * |        |          |1 = ACMP1_N function is selected to the pin PC.15.      
+ * |        |          |1 = ACMP1_N function is selected to the pin PC.15.
  * |[16:31] |GPC_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOC[15:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOC[15:0] I/O input Schmitt Trigger function Enabled.
@@ -7715,7 +7719,7 @@ typedef struct
  * |[0]     |GPD_MFP0  |PD.0 Pin Function Selection
  * |        |          |Bit GPD_MFP[0] determines the PD.0 function.
  * |        |          |0 = GPIO function is selected to the pin PD.0.
- * |        |          |1 = SPI2_SS0 function is selected to the pin PD.0.     
+ * |        |          |1 = SPI2_SS0 function is selected to the pin PD.0.
  * |[1]     |GPD_MFP1  |PD.1 Pin Function Selection
  * |        |          |Bit GPD_MFP[1] determines the PD.1 function.
  * |        |          |0 = GPIO function is selected to the pin PD.1.
@@ -7723,51 +7727,51 @@ typedef struct
  * |[2]     |GPD_MFP2  |PD.2 Pin Function Selection
  * |        |          |Bit GPD_MFP[2] determines the PD.2 function.
  * |        |          |0 = GPIO function is selected to the pin PD.2.
- * |        |          |1 = SPI2_MISO0 function is selected to the pin PD.2.     
+ * |        |          |1 = SPI2_MISO0 function is selected to the pin PD.2.
  * |[3]     |GPD_MFP3  |PD.3 Pin Function Selection
  * |        |          |Bit GPD_MFP[3] determines the PD.3 function.
  * |        |          |0 = GPIO function is selected to the pin PD.3.
- * |        |          |1 = SPI2_MOSI0 function is selected to the pin PD.3.     
+ * |        |          |1 = SPI2_MOSI0 function is selected to the pin PD.3.
  * |[4]     |GPD_MFP4  |PD.4 Pin Function Selection
  * |        |          |Bit GPD_MFP[4] determines the PD.4 function.
  * |        |          |0 = GPIO function is selected to the pin PD.4.
- * |        |          |1 = SPI2_MISO1 function is selected to the pin PD.4.     
+ * |        |          |1 = SPI2_MISO1 function is selected to the pin PD.4.
  * |[5]     |GPD_MFP5  |PD.5 Pin Function Selection
  * |        |          |Bit GPD_MFP[9] determines the PD.5 function.
  * |        |          |0 = GPIO function is selected to the pin PD.5.
- * |        |          |1 = SPI2_MOSI1 function is selected to the pin PD.5.      
+ * |        |          |1 = SPI2_MOSI1 function is selected to the pin PD.5.
  * |[8]     |GPD_MFP8  |PD.8 Pin Function Selection
  * |        |          |Bit GPD_MFP[8] determines the PD.8 function.
  * |        |          |0 = GPIO function is selected to the pin PD.8.
- * |        |          |1 = SPI3_SS0 function is selected to the pin PD.8.     
+ * |        |          |1 = SPI3_SS0 function is selected to the pin PD.8.
  * |[9]     |GPD_MFP9  |PD.9 Pin Function Selection
  * |        |          |Bit GPD_MFP[9] determines the PD.9 function.
  * |        |          |0 = GPIO is function is selected to the pin PD.9.
- * |        |          |1 = SPI3_CLK function is selected to the pin PD.9.     
+ * |        |          |1 = SPI3_CLK function is selected to the pin PD.9.
  * |[10]    |GPD_MFP10 |PD.10 Pin Function Selection
  * |        |          |Bit GPD_MFP[10] determines the PD.10 function.
  * |        |          |0 = GPIO function is selected to the pin PD.10.
- * |        |          |1 = SPI3_MISO0 function is selected to the pin PD.10.     
+ * |        |          |1 = SPI3_MISO0 function is selected to the pin PD.10.
  * |[11]    |GPD_MFP11 |PD.11 Pin Function Selection
  * |        |          |Bit GPD_MFP[11] determines the PD.11 function.
  * |        |          |0 = GPIO function is selected to the pin PD.11.
- * |        |          |1 = SPI3_MOSI0 function is selected to the pin PD.11.     
+ * |        |          |1 = SPI3_MOSI0 function is selected to the pin PD.11.
  * |[12]    |GPD_MFP12 |PD.12 Pin Function Selection
  * |        |          |Bit GPD_MFP[12] determines the PD.12 function.
  * |        |          |0 = GPIO function is selected to the pin PD.12.
- * |        |          |1 = SPI3_MISO1 function is selected to the pin PD.12.     
+ * |        |          |1 = SPI3_MISO1 function is selected to the pin PD.12.
  * |[13]    |GPD_MFP13 |PD.13 Pin Function Selection
  * |        |          |Bit GPD_MFP[13] determines the PD.13 function.
  * |        |          |0 = GPIO function is selected to the pin PD.13.
- * |        |          |1 = SPI3_MOSI1 function is selected to the pin PD.13.     
+ * |        |          |1 = SPI3_MOSI1 function is selected to the pin PD.13.
  * |[14]    |GPD_MFP14 |PD.14 Pin Function Selection
  * |        |          |Bit GPD_MFP[14] determines the PD.14 function.
  * |        |          |0 = GPIO function is selected.
- * |        |          |1 = UART2_RXD function is selected.  
+ * |        |          |1 = UART2_RXD function is selected.
  * |[15]    |GPD_MFP15 |PD.15 Pin Function Selection
  * |        |          |Bit GPD_MFP[15] determines the PD.15 function.
  * |        |          |0 = GPIO function is selected.
- * |        |          |1 = UART2_TXD function is selected.  
+ * |        |          |1 = UART2_TXD function is selected.
  * |[16:31] |GPD_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOD[15:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOD[15:0] I/O input Schmitt Trigger function Enabled.
@@ -7779,17 +7783,17 @@ typedef struct
  * |[0]     |GPE_MFP0  |PE.0 Pin Function Selection
  * |        |          |Bit GPE_MFP[0] determines the PE.0 function.
  * |        |          |0 = GPIO function is selected to the pin PE.0.
- * |        |          |1 = PWM6 function is selected to the pin PE.0.     
+ * |        |          |1 = PWM6 function is selected to the pin PE.0.
  * |[1]     |GPE_MFP1  |PE.1 Pin Function Selection
  * |        |          |Bit GPE_MFP[1] determines the PE.1 function.
  * |        |          |0 = GPIO function is selected to the pin PE.1.
- * |        |          |1 = PWM7 function is selected to the pin PE.1.     
+ * |        |          |1 = PWM7 function is selected to the pin PE.1.
  * |[5]     |GPE_MFP5  |PE.5 Pin Function Selection
  * |        |          |Bits PE5_T1EX (ALT_MFP[25]) and GPE_MFP5 determine the PE.5 function.
  * |        |          |(PE5_T1EX, GPE_MFP5) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM5 function is selected.
- * |        |          |(1, 1) = TM1_EXT function is selected.  
+ * |        |          |(1, 1) = TM1_EXT function is selected.
  * |[16:31] |GPE_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOD[15:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOD[15:0] I/O input Schmitt Trigger function Enabled.
@@ -7802,20 +7806,20 @@ typedef struct
  * |        |          |Bit GPF_MFP[0] determines the PF.0 function
  * |        |          |0 = GPIO function is selected to the pin PF.0.
  * |        |          |1 = XT1_OUT function is selected to the pin PF.0.
- * |        |          |Note: This bit is read only and is decided by user configuration CGPFMFP (Config0[27]).     
+ * |        |          |Note: This bit is read only and is decided by user configuration CGPFMFP (Config0[27]).
  * |[1]     |GPF_MFP1  |PF.1 Pin Function Selection
  * |        |          |Bit GPF_MFP[1] determines the PF.1 function.
  * |        |          |0 = GPIO function is selected to the pin PF.1.
  * |        |          |1 = XT1_IN function is selected to the pin PF.1.
- * |        |          |Note: This bit is read only and is decided by user configuration CGPFMFP (Config0[27]).     
+ * |        |          |Note: This bit is read only and is decided by user configuration CGPFMFP (Config0[27]).
  * |[2]     |GPF_MFP2  |PF.2 Pin Function Selection
  * |        |          |Bit GPF_MFP[2] determines the PF.2 function.
  * |        |          |0 = GPIO function is selected to the pin PF.2.
- * |        |          |1 = PS2_DAT function is selected to the pin PF.2.     
+ * |        |          |1 = PS2_DAT function is selected to the pin PF.2.
  * |[3]     |GPF_MFP3  |PF.3 Pin Function Selection
  * |        |          |Bit GPF_MFP[3] determines the PF.3 function.
  * |        |          |0 = GPIO function is selected to the pin PF.3.
- * |        |          |1 = PS2_CLK function is selected to the pin PF.3.     
+ * |        |          |1 = PS2_CLK function is selected to the pin PF.3.
  * |[16:19] |GPF_TYPEn |Trigger Function Selection
  * |        |          |0 = GPIOF[3:0] I/O input Schmitt Trigger function Disabled.
  * |        |          |1 = GPIOF[3:0] I/O input Schmitt Trigger function Enabled.
@@ -7829,95 +7833,95 @@ typedef struct
  * |        |          |(PB10_S01, GPB_MFP10) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM2 function is selected.
- * |        |          |(1, 1) = SPI0_SS1 function is selected.       
+ * |        |          |(1, 1) = SPI0_SS1 function is selected.
  * |[1]     |PB9_S11   |PB.9 Pin Alternative Function Selection
  * |        |          |Bits PB9_S11 (ALT_MFP[1]) and GPB_MFP[9] determine the PB.9 function.
  * |        |          |(PB9_S11, GPB_MFP9) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM1 function is selected.
- * |        |          |(1, 1) = SPI1_SS1 function is selected.           
+ * |        |          |(1, 1) = SPI1_SS1 function is selected.
  * |[2]     |PA7_S21   |PA.7 Pin Alternative Function Selection
  * |        |          |Bits PA7_SC1DAT (ALT_MFP1[6]), PA7_S21 (ALT_MFP[2]) and GPA_MFP[7] determine the PA.7 function.
  * |        |          |(PA7_SC1DAT, PA7_S21, GPA_MFP7) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = ADC7 function is selected.
  * |        |          |(0, 1, 1) = SPI2_SS1 function is selected.
- * |        |          |(1, 0, 1) = SC1_DAT function is selected.                
+ * |        |          |(1, 0, 1) = SC1_DAT function is selected.
  * |[3]     |PB14_S31  |PB.14 Pin Alternative Function Selection
  * |        |          |Bits PB14_S31 (ALT_MFP[3]) and GPB_MFP[14] determine the PB.14 function.
  * |        |          |(PB14_S31, GPB_MFP14) value and function mapping is as following list
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = INT0 function is selected.
- * |        |          |(1, 1) = SPI3_SS1 function is selected.  
- * |[4]     |PB11_PWM4 |PB.11 Pin Alternative Function Selection     
+ * |        |          |(1, 1) = SPI3_SS1 function is selected.
+ * |[4]     |PB11_PWM4 |PB.11 Pin Alternative Function Selection
  * |        |          |Bits PB11_PWM4 (ALT_MFP[4]) and GPB_MFP[11] determine the PB.11 function.
  * |        |          |(PB11_PWM4, GPB_MFP11) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
- * |        |          |(0, 1) = TM3 function is selected.     
- * |        |          |(1, 1) = PWM4 function is selected.      
+ * |        |          |(0, 1) = TM3 function is selected.
+ * |        |          |(1, 1) = PWM4 function is selected.
  * |[5]     |PC0_I2SLRCLK|PC.0 Pin Alternative Function Selection
  * |        |          |Bits PC0_I2SLRCLK (ALT_MFP[5]) and GPC_MFP[0] determine the PC.0 function.
  * |        |          |(PC0_I2SLRCLK, GPC_MFP0) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_SS0 function is selected.
- * |        |          |(1, 1) = I2S_LRLCK function is selected.         
+ * |        |          |(1, 1) = I2S_LRLCK function is selected.
  * |[6]     |PC1_I2SBCLK|PC.1 Pin Alternative Function Selection
  * |        |          |Bits PC1_I2SBCLK (ALT_MFP[6]) and GPC_MFP[1] determine the PC.1 function.
  * |        |          |(PC1_I2SBCLK, GPC_MFP1) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_CLK function is selected.
- * |        |          |(1, 1) = I2S_BCLK function is selected.         
+ * |        |          |(1, 1) = I2S_BCLK function is selected.
  * |[7]     |PC2_I2SDI |PC.2 Pin Alternative Function Selection
  * |        |          |Bits PC2_I2SDI (ALT_MFP[7]) and GPC_MFP[2] determine the PC.2 function.
  * |        |          |(PC2_I2SDI, GPC_MFP2) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_MISO0 function is selected.
- * |        |          |(1, 1) = I2S_DI function is selected.     
+ * |        |          |(1, 1) = I2S_DI function is selected.
  * |[8]     |PC3_I2SDO |PC.3 Pin Alternative Function Selection
  * |        |          |Bits PC3_I2SDO (ALT_MFP[8]) and GPC_MFP[3] determine the PC.3 function.
  * |        |          |(PC3_I2SDO, GPC_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = SPI0_MOSI0 function is selected.
- * |        |          |(1, 1) = I2S_DO function is selected. 
+ * |        |          |(1, 1) = I2S_DO function is selected.
  * |[9]     |PA15_I2SMCLK|PA.15 Pin Alternative Function Selection
  * |        |          |Bits PA15_SC2PWR (ALT_MFP1[12]), PA15_I2SMCLK (ALT_MFP[9]) and GPA_MFP[15] determine the PA.15 function.
  * |        |          |(PA15_SC2PWR, PA15_I2SMCLK, GPA_MFP15) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = PWM3 function is selected.
  * |        |          |(0, 1, 1) = I2S_MCLK function is selected.
- * |        |          |(1, 0, 1) = SC2_PWR function is selected.  
- * |[24]    |PB15_T0EX |PB.15 Pin Alternative Function Selection  
+ * |        |          |(1, 0, 1) = SC2_PWR function is selected.
+ * |[24]    |PB15_T0EX |PB.15 Pin Alternative Function Selection
  * |        |          |Bits PB15_T0EX (ALT_MFP[24]) and GPB_MFP[15] determine the PB.15 function.
  * |        |          |(PB15_T0EX, GPB_MFP15) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = INT1 function is selected.
- * |        |          |(1, 1) = TM0_EXT function is selected. 
+ * |        |          |(1, 1) = TM0_EXT function is selected.
  * |[25]    |PE5_T1EX  |PE.5 Pin Alternative Function Selection
  * |        |          |Bits PE5_T1EX (ALT_MFP[25]) and GPE_MFP5 determine the PE.5 function.
  * |        |          |(PE5_T1EX, GPE_MFP5) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM5 function is selected.
- * |        |          |(1, 1) = TM1_EXT function is selected.   
+ * |        |          |(1, 1) = TM1_EXT function is selected.
  * |[26]    |PB2_T2EX  |PB.2 Pin Alternative Function Selection
  * |        |          |Bits PB2_CPO0 (ALT_MFP[30]), PB2_T2EX (ALT_MFP[26]) and GPB_MFP[2] determine the PB.2 function.
  * |        |          |(PB2_CPO0, PB2_T2EX, GPB_MFP2) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = UART0_nRTS function is selected.
  * |        |          |(0, 1, 1) = TM2_EXT function is selected.
- * |        |          |(1, 0, 1) = ACMP0_O function is selected.           
+ * |        |          |(1, 0, 1) = ACMP0_O function is selected.
  * |[27]    |PB3_T3EX  |PB.3 Pin Alternative Function Selection
  * |        |          |Bits PB3_SC2CD (ALT_MFP1[14]), PB3_T3EX (ALT_MFP[27]) and GPB_MFP[3] determine the PB.3 function.
  * |        |          |(PB3_SC2CD, PB3_T3EX, GPB_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = UART0_nCTS function is selected.
  * |        |          |(0, 1, 1) = TM3_EXT function is selected.
- * |        |          |(1, 0, 1) = SC2_CD function is selected.  
+ * |        |          |(1, 0, 1) = SC2_CD function is selected.
  * |[29]    |PB8_CLKO  |PB.8 Pin Alternative Function Selection
  * |        |          |Bits PB8_CLKO (ALT_MFP[29]) and GPB_MFP[8] determine the PB.8 function.
- * |        |          |(PB8_CLKO, GPB_MFP8) value and function mapping is as following list. 
+ * |        |          |(PB8_CLKO, GPB_MFP8) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = TM0 function is selected.
- * |        |          |(1, 1) = CLKO function is selected.  
+ * |        |          |(1, 1) = CLKO function is selected.
  * |[30]    |PB2_CPO0  |PB.2 Pin Alternative Function Selection
  * |        |          |Bits PB2_CPO0 (ALT_MFP[30]), PB2_T2EX (ALT_MFP[26]) and GPB_MFP[2] determine the PB.2 function.
  * |        |          |(PB2_CPO0, PB2_T2EX, GPB_MFP2) value and function mapping is as following list.
@@ -7935,87 +7939,87 @@ typedef struct
  * |        |          |(PA2_SC0CLK, GPA_MFP2) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC2 function is selected.
- * |        |          |(1, 1) = SC0_CLK function is selected.             
- * |[1]     |PA3_SC0DAT|PA.3 Pin Alternative Function Selection 
+ * |        |          |(1, 1) = SC0_CLK function is selected.
+ * |[1]     |PA3_SC0DAT|PA.3 Pin Alternative Function Selection
  * |        |          |Bits PA3_SC0DAT (ALT_MFP1[1]) and GPA_MFP[3] determine the PA.3 function.
  * |        |          |(PA3_SC0DAT, GPA_MFP3) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC3 function is selected.
- * |        |          |(1, 1) = SC0_DAT function is selected. 
+ * |        |          |(1, 1) = SC0_DAT function is selected.
  * |[2]     |PA0_SC0PWR|PA.0 Pin Alternative Function Selection
  * |        |          |Bit PA0_SC0PWR (ALT_MFP1[2]) and GPA_MFP[0] determine the PA.0 function.
  * |        |          |(PA0_SC0PWR, GPA_MFP0) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC0 function is selected.
- * |        |          |(1, 1) = SC0_PWR function is selected.  
- * |[3]     |PA1_SC0RST|PA.1 Pin Alternative Function Selection     
+ * |        |          |(1, 1) = SC0_PWR function is selected.
+ * |[3]     |PA1_SC0RST|PA.1 Pin Alternative Function Selection
  * |        |          |Bits PA1_SC0RST (ALT_MFP1[3]) and GPA_MFP[1] determine the PA.1 function.
  * |        |          |(PA1_SC0RST, GPA_MFP1) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC1 function is selected.
- * |        |          |(1, 1) = SC0_RST function is selected.     
+ * |        |          |(1, 1) = SC0_RST function is selected.
  * |[4]     |PC6_SC0CD |PC.6 Pin Alternative Function Selection
  * |        |          |Bits PC6_SC0CD (ALT_MFP1[4]) and GPC_MFP[6] determine the PC.6 function.
  * |        |          |(PC6_SC0CD, GPC_MFP6) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ACMP0_P function is selected.
- * |        |          |(1, 1) = SC0_CD function is selected.     
- * |[5]     |PA6_SC1CLK|PA.6 Pin Alternative Function Selection     
+ * |        |          |(1, 1) = SC0_CD function is selected.
+ * |[5]     |PA6_SC1CLK|PA.6 Pin Alternative Function Selection
  * |        |          |Bits PA6_SC1CLK (ALT_MFP1[5]) and GPA_MFP[6] determine the PA.6 function.
  * |        |          |(PA6_SC1CLK, GPA_MFP6) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC6 function is selected.
- * |        |          |(1, 1) = SC1_CLK function is selected.         
+ * |        |          |(1, 1) = SC1_CLK function is selected.
  * |[6]     |PA7_SC1DAT|PA.7 Pin Alternative Function Selection
  * |        |          |Bits PA7_SC1DAT (ALT_MFP1[6]), PA7_S21 (ALT_MFP[2]) and GPA_MFP[7] determine the PA.7 function.
  * |        |          |(PA7_SC1DAT, PA7_S21, GPA_MFP7) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = ADC7 function is selected.
  * |        |          |(0, 1, 1) = SPI2_SS1 function is selected.
- * |        |          |(1, 0, 1) = SC1_DAT function is selected.         
+ * |        |          |(1, 0, 1) = SC1_DAT function is selected.
  * |[7]     |PA4_SC1PWR|PA.4 Pin Alternative Function Selection
  * |        |          |Bits PA4_SC1PWR (ALT_MFP1[7]) and GPA_MFP[4] determine the PA.4 function.
  * |        |          |(PA4_SC1PWR, GPA_MFP4) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC4 function is selected.
- * |        |          |(1, 1) = SC1_PWR function is selected. 
+ * |        |          |(1, 1) = SC1_PWR function is selected.
  * |[8]     |PA5_SC1RST|PA.5 Pin Alternative Function Selection
  * |        |          |Bits PA5_SC1RST (ALT_MFP1[8]) and GPA_MFP[5] determine the PA.5 function.
  * |        |          |(PA5_SC1RST, GPA_MFP5) value and function mapping is as following list,
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ADC5 function is selected.
- * |        |          |(1, 1) = SC1_RST function is selected. 
- * |[9]     |PC7_SC1CD |PC.7 Pin Alternative Function Selection     
+ * |        |          |(1, 1) = SC1_RST function is selected.
+ * |[9]     |PC7_SC1CD |PC.7 Pin Alternative Function Selection
  * |        |          |Bits PC7_SC1CD (ALT_MFP1[9]) and GPC_MFP[7] determine the PC.7 function.
  * |        |          |(PC7_SC1CD, GPC_MFP7) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = ACMP0_N function is selected.
  * |        |          |(1, 1) = SC1_CD function is selected.
- * |[10]    |PA13_SC2CLK|PA.13 Pin Alternative Function Selection 
+ * |[10]    |PA13_SC2CLK|PA.13 Pin Alternative Function Selection
  * |        |          |Bits PA13_SC2CLK (ALT_MFP1[10]) and GPA_MFP[13] determine the PA.13 function.
  * |        |          |(PA13_SC2CLK, GPA_MFP13) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM1 function is selected.
- * |        |          |(1, 1) = SC2_CLK function is selected.      
- * |[11]    |PA12_SC2DAT|PA.12 Pin Alternative Function Selection 
+ * |        |          |(1, 1) = SC2_CLK function is selected.
+ * |[11]    |PA12_SC2DAT|PA.12 Pin Alternative Function Selection
  * |        |          |Bits PA12_SC2DAT (ALT_MFP1[11]) and GPA_MFP[12] determine the PA.12 function.
  * |        |          |(PA12_SC2DAT, GPA_MFP12) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM0 function is selected.
- * |        |          |(1, 1) = SC2_DAT function is selected.         
+ * |        |          |(1, 1) = SC2_DAT function is selected.
  * |[12]    |PA15_SC2PWR|PA.15 Pin Alternative Function Selection
  * |        |          |Bits PA15_SC2PWR (ALT_MFP1[12]), PA15_I2SMCLK (ALT_MFP[9]) and GPA_MFP[15] determine the PA.15 function.
  * |        |          |(PA15_SC2PWR, PA15_I2SMCLK, GPA_MFP15) value and function mapping is as following list.
  * |        |          |(0, 0, 0) = GPIO function is selected.
  * |        |          |(0, 0, 1) = PWM3 function is selected.
  * |        |          |(0, 1, 1) = I2S_MCLK function is selected.
- * |        |          |(1, 0, 1) = SC2_PWR function is selected.             
+ * |        |          |(1, 0, 1) = SC2_PWR function is selected.
  * |[13]    |PA14_SC2RST|PA.14 Pin Alternative Function Selection
  * |        |          |Bits PA14_SC2RST (ALT_MFP1[13]) and GPA_MFP[14] determine the PA.14 function.
  * |        |          |(PA14_SC2RST, GPA_MFP14) value and function mapping is as following list.
  * |        |          |(0, 0) = GPIO function is selected.
  * |        |          |(0, 1) = PWM2 function is selected.
- * |        |          |(1, 1) = SC2_RST function is selected.             
+ * |        |          |(1, 1) = SC2_RST function is selected.
  * |[14]    |PB3_SC2CD |PB.3 Pin Alternative Function Selection
  * |        |          |Bits PB3_SC2CD (ALT_MFP1[14]), PB3_T3EX (ALT_MFP[27]) and GPB_MFP[3] determine the PB.3 function.
  * |        |          |(PB3_SC2CD, PB3_T3EX, GPB_MFP3) value and function mapping is as following list.
@@ -8133,28 +8137,28 @@ typedef struct
     __IO uint32_t IPRSTC1;       /* Offset: 0x08  IP Reset Control Register 1                                        */
     __IO uint32_t IPRSTC2;       /* Offset: 0x0C  IP Reset Control Register 2                                        */
     __IO uint32_t IPRSTC3;       /* Offset: 0x10  IP Reset Control Register 3                                        */
-    __I  uint32_t RESERVE0;     
+    __I  uint32_t RESERVE0;
     __IO uint32_t BODCR;         /* Offset: 0x18  Brown-out Detector Control Register                                */
     __IO uint32_t TEMPCR;        /* Offset: 0x1C  Temperature Sensor Control Register                                */
-    __I  uint32_t RESERVE1;     
+    __I  uint32_t RESERVE1;
     __IO uint32_t PORCR;         /* Offset: 0x24  Power-on-Reset Controller Register                                 */
-    __I  uint32_t RESERVE2[2];  
+    __I  uint32_t RESERVE2[2];
     __IO uint32_t GPA_MFP;       /* Offset: 0x30  GPIOA Multiple Function and Input Type Control Register            */
     __IO uint32_t GPB_MFP;       /* Offset: 0x34  GPIOB Multiple Function and Input Type Control Register            */
     __IO uint32_t GPC_MFP;       /* Offset: 0x38  GPIOC Multiple Function and Input Type Control Register            */
     __IO uint32_t GPD_MFP;       /* Offset: 0x3C  GPIOD Multiple Function and Input Type Control Register            */
     __IO uint32_t GPE_MFP;       /* Offset: 0x40  GPIOE Multiple Function and Input Type Control Register            */
     __IO uint32_t GPF_MFP;       /* Offset: 0x44  GPIOF Multiple Function and Input Type Control Register            */
-    __I  uint32_t RESERVE3[2];  
+    __I  uint32_t RESERVE3[2];
     __IO uint32_t ALT_MFP;       /* Offset: 0x50  Alternative Multiple Function Pin Control Register                 */
-    __I  uint32_t RESERVE4;     
+    __I  uint32_t RESERVE4;
     __IO uint32_t ALT_MFP1;      /* Offset: 0x58  Alternative Multiple Function Pin Control Register 1               */
     __IO uint32_t ALT_MFP2;      /* Offset: 0x5C  Alternative Multiple Function Pin Control Register 2               */
-    __I  uint32_t RESERVE5[8];  
+    __I  uint32_t RESERVE5[8];
     __IO uint32_t IRCTRIMCTL;    /* Offset: 0x80  IRC Trim Control Register                                          */
     __IO uint32_t IRCTRIMIEN;    /* Offset: 0x84  IRC Trim Interrupt Enable Register                                 */
     __IO uint32_t IRCTRIMINT;    /* Offset: 0x88  IRC Trim Interrupt Status Register                                 */
-    __I  uint32_t RESERVE6[29]; 
+    __I  uint32_t RESERVE6[29];
     __IO uint32_t REGWRPROT;     /* Offset: 0x100  Register Write Protection Register                                */
 
 } GCR_T;
@@ -9070,12 +9074,12 @@ typedef struct
  * |        |          |0 = RX FIFO is not overflow.
  * |        |          |1 = RX FIFO is overflow.
  * |        |          |Note: This bit can be cleared by writing "1" to it.
- * |[3]     |RS485_ADD_DETF|RS-485 Address Byte Detection Flag 
+ * |[3]     |RS485_ADD_DETF|RS-485 Address Byte Detection Flag
  * |        |          |0 = Receiver detects a data that is not an address bit (bit 9 ='1').
  * |        |          |1 = Receiver detects a data that is an address bit (bit 9 ='1').
  * |        |          |Note1: This field is used for RS-485 function mode and RS485_ADD_EN (UA_ALT_CSR[15]) is set to 1 to enable Address detection mode.
  * |        |          |Note2: This bit can be cleared by writing '1' to it.
- * |[4]     |PEF       |Parity Error Flag 
+ * |[4]     |PEF       |Parity Error Flag
  * |        |          |This bit is set to logic 1 whenever the received character does not have a valid "parity bit", and is reset whenever the CPU writes 1 to this bit.
  * |        |          |0 = No parity error is generated.
  * |        |          |1 = Parity error is generated.
@@ -9124,7 +9128,7 @@ typedef struct
  * |        |          |0 = TX FIFO is not full.
  * |        |          |1 = TX FIFO is full.
  * |        |          |This bit is set when the number of usage in TX FIFO Buffer is equal to 64/16/16(UART0/UART1/UART2), otherwise is cleared by hardware.
- * |[24]    |TX_OVER_IF|TX Overflow Error Interrupt Flag 
+ * |[24]    |TX_OVER_IF|TX Overflow Error Interrupt Flag
  * |        |          |If TX FIFO (UA_THR) is full, an additional write to UA_THR will cause this bit to logic 1.
  * |        |          |0 = TX FIFO is not overflow.
  * |        |          |1 = TX FIFO is overflow.
@@ -9363,7 +9367,7 @@ typedef struct
  * |        |          |0 = LIN automatic resynchronization Disabled.
  * |        |          |1 = LIN automatic resynchronization Enabled.
  * |        |          |Note1: This bit only valid when in LIN slave mode (LINS_EN (UA_LIN_CTL[0]) = 1).
- * |        |          |Note2: When operation in Automatic Resynchronization mode, the baud rate setting must be mode2 (BAUD_M1 (UA_BAUD [29]) and BAUD_M0 (UA_BAUD [28]) must be 1). 
+ * |        |          |Note2: When operation in Automatic Resynchronization mode, the baud rate setting must be mode2 (BAUD_M1 (UA_BAUD [29]) and BAUD_M0 (UA_BAUD [28]) must be 1).
  * |        |          |(Slave mode with automatic resynchronization).
  * |[3]     |LINS_DUM_EN|LIN Slave Divider Update Method Enable Control
  * |        |          |0 = UA_BAUD updated is written by software (if no automatic resynchronization update occurs at the same time).
@@ -9468,7 +9472,7 @@ typedef struct
  * |        |          |Note1: This bit iscan be cleared by writing 1 to it.
  * |        |          |Note2: This bit is only valid when enable bit error detection function (BIT_ERR_EN (UA_LIN_CTL [12]) = 1).
  */
- 
+
     union
     {
         __IO uint32_t DATA;          /* Offset: 0x00  UART Data Register                                                 */
@@ -9489,7 +9493,7 @@ typedef struct
     __IO uint32_t FUN_SEL;       /* Offset: 0x30  UART Function Select Register                                      */
     __IO uint32_t LIN_CTL;       /* Offset: 0x34  UART LIN Control Register                                          */
     __IO uint32_t LIN_SR;        /* Offset: 0x38  UART LIN Status Register                                           */
-    
+
 
 } UART_T;
 
@@ -10176,9 +10180,9 @@ typedef struct
     __IO uint32_t ATTR;          /* Offset: 0x10  USB Bus Status and Attribution Register                            */
     __I  uint32_t FLDET;         /* Offset: 0x14  USB Floating Detection Register                                    */
     __IO uint32_t STBUFSEG;      /* Offset: 0x18  Setup Token Buffer Segmentation Register                           */
-    __I  uint32_t RESERVE0;   
+    __I  uint32_t RESERVE0;
         USBD_EP_T EP[6];         /* Offset: 0x20  Endpoint Related Configuration Registers                           */
-    __I  uint32_t RESERVE1[4]; 
+    __I  uint32_t RESERVE1[4];
     __IO uint32_t DRVSE0;        /* Offset: 0x90  USB Drive SE0 Control Register                                     */
 
 } USBD_T;
@@ -11023,7 +11027,3 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 #include "clk.h"
 #include "acmp.h"
 #endif
-
-
-
-

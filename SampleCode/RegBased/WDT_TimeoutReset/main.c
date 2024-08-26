@@ -5,7 +5,7 @@
  * $Date: 14/11/27 2:34p $
  * @brief
  *           Show how to generate time-out reset system event while WDT time-out reset delay period expired.
- *           
+ *
  * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
  * @copyright Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
@@ -48,6 +48,8 @@ void WDT_IRQHandler(void)
 
 void SYS_Init(void)
 {
+	uint32_t u32TimeOutCnt;
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -55,7 +57,9 @@ void SYS_Init(void)
     CLK->PWRCON |= CLK_PWRCON_IRC22M_EN_Msk;
 
     /* Waiting for IRC22M clock ready */
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC22M_STB_Msk));
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC22M_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
 
     /* Switch HCLK clock source to HIRC */
     CLK->CLKSEL0 = CLK_CLKSEL0_HCLK_S_HIRC;
@@ -70,9 +74,15 @@ void SYS_Init(void)
     CLK->PLLCON = PLLCON_SETTING;
 
     /* Waiting for clock ready */
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk));
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL12M_STB_Msk));
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC10K_STB_Msk));
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL12M_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
+    u32TimeOutCnt = __HIRC;
+    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC10K_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
 
     /* Switch HCLK clock source to PLL, STCLK to HCLK/2 */
     CLK->CLKSEL0 = CLK_CLKSEL0_STCLK_S_HCLK_DIV2 | CLK_CLKSEL0_HCLK_S_PLL;

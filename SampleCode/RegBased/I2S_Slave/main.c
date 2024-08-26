@@ -4,7 +4,7 @@
  * $Revision: 9 $
  * $Date: 15/04/16 10:23a $
  * @brief
- *           Configure I2S as Slave mode and demonstrate how I2S works in Slave mode. 
+ *           Configure I2S as Slave mode and demonstrate how I2S works in Slave mode.
  *           This sample code needs to work with I2S_Master sample code.
  * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
@@ -21,15 +21,19 @@ uint32_t g_u32TxValue;
 
 void SYS_Init(void)
 {
+	uint32_t u32TimeOutCnt;
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
-    
+
     /* Enable IRC22M clock */
     CLK->PWRCON |= CLK_PWRCON_IRC22M_EN_Msk;
 
     /* Waiting for IRC22M clock ready */
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC22M_STB_Msk));
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_IRC22M_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
 
     /* Switch HCLK clock source to HIRC */
     CLK->CLKSEL0 = CLK_CLKSEL0_HCLK_S_HIRC;
@@ -44,8 +48,12 @@ void SYS_Init(void)
     CLK->PLLCON = PLLCON_SETTING;
 
     /* Waiting for clock ready */
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk));
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL12M_STB_Msk));
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL12M_STB_Msk))
+		if(--u32TimeOutCnt == 0) break;
 
     /* Switch HCLK clock source to PLL, STCLK to HCLK/2 */
     CLK->CLKSEL0 = CLK_CLKSEL0_STCLK_S_HCLK_DIV2 | CLK_CLKSEL0_HCLK_S_PLL;
